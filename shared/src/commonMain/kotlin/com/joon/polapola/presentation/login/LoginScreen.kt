@@ -1,4 +1,4 @@
-package com.joon.polapola.presentation.splash
+package com.joon.polapola.presentation.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,19 +19,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.joon.polapola.presentation.login.components.LoginButtons
 import com.joon.polapola.presentation.theme.AppTheme
-import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import polapola.shared.generated.resources.Res
 import polapola.shared.generated.resources.logo
 
 @Composable
-fun SplashScreen(onSplashFinished: () -> Unit = {}) {
-    LaunchedEffect(onSplashFinished) {
-        delay(SPLASH_DURATION_MILLIS)
-        onSplashFinished()
-    }
-
+fun LoginScreen() {
     Column(
         modifier =
             Modifier
@@ -65,15 +59,15 @@ fun SplashScreen(onSplashFinished: () -> Unit = {}) {
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.displaySmall,
         )
+        Spacer(modifier = Modifier.height(32.dp))
+        LoginButtons()
     }
 }
 
-private const val SPLASH_DURATION_MILLIS = 1_500L
-
 @Preview
 @Composable
-private fun SplashScreenPreview() {
+private fun LoginScreenPreview() {
     AppTheme {
-        SplashScreen()
+        LoginScreen()
     }
 }
