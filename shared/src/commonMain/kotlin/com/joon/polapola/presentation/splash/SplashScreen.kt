@@ -27,10 +27,11 @@ import polapola.shared.generated.resources.logo
 @Composable
 fun SplashScreen() {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .offset(y = (-44).dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .offset(y = (-44).dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {

@@ -40,8 +40,7 @@ private fun Typography.withFontFamily(fontFamily: FontFamily): Typography =
         labelSmall = labelSmall.withFontFamily(fontFamily),
     )
 
-private fun TextStyle.withFontFamily(fontFamily: FontFamily): TextStyle =
-    copy(fontFamily = fontFamily)
+private fun TextStyle.withFontFamily(fontFamily: FontFamily): TextStyle = copy(fontFamily = fontFamily)
 
 @Preview
 @Composable
