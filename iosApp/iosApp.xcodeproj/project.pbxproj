@@ -8,17 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		2B11A3000000000000000001 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2B11A3000000000000000005 /* FirebaseCore */; };
-		2B11A3000000000000000002 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2B11A3000000000000000003 /* GoogleService-Info.plist */; };
 		2B11A3000000000000000006 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2B11A3000000000000000007 /* FirebaseAuth */; };
+		2B11A3000000000000000008 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 2B11A300000000000000000A /* GoogleSignIn */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2B11A3000000000000000003 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AE2A331CA1CD7736563FECD7 /* Polapola.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Polapola.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F4C637AF52B9ED2DFA7BCF78 /* Exceptions for "iosApp" folder in "iosApp" target */ = {
+		F4C637AF52B9ED2DFA7BCF78 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -31,7 +30,7 @@
 		7063F5AF69C7A8D9CD6422FB /* iosApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				F4C637AF52B9ED2DFA7BCF78 /* Exceptions for "iosApp" folder in "iosApp" target */,
+				F4C637AF52B9ED2DFA7BCF78 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -50,6 +49,7 @@
 			files = (
 				2B11A3000000000000000001 /* FirebaseCore in Frameworks */,
 				2B11A3000000000000000006 /* FirebaseAuth in Frameworks */,
+				2B11A3000000000000000008 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,7 +61,6 @@
 			children = (
 				A2FE91A526B1FFFC1D381C9F /* Configuration */,
 				7063F5AF69C7A8D9CD6422FB /* iosApp */,
-				2B11A3000000000000000003 /* GoogleService-Info.plist */,
 				2C066B7B2241BF9018AE0A56 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -97,6 +96,7 @@
 			packageProductDependencies = (
 				2B11A3000000000000000005 /* FirebaseCore */,
 				2B11A3000000000000000007 /* FirebaseAuth */,
+				2B11A300000000000000000A /* GoogleSignIn */,
 			);
 			productName = iosApp;
 			productReference = AE2A331CA1CD7736563FECD7 /* Polapola.app */;
@@ -128,6 +128,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				2B11A3000000000000000004 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				2B11A3000000000000000009 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2C066B7B2241BF9018AE0A56 /* Products */;
@@ -144,7 +145,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B11A3000000000000000002 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -394,6 +394,14 @@
 				minimumVersion = 12.15.0;
 			};
 		};
+		2B11A3000000000000000009 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.2.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -406,6 +414,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2B11A3000000000000000004 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
+		};
+		2B11A300000000000000000A /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2B11A3000000000000000009 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

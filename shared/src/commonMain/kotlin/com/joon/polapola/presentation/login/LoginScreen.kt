@@ -26,7 +26,7 @@ import polapola.shared.generated.resources.Res
 import polapola.shared.generated.resources.logo
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onGoogleLoginClick: () -> Unit = {}) {
     Column(
         modifier =
             Modifier
@@ -60,7 +60,9 @@ fun LoginScreen() {
             style = MaterialTheme.typography.displaySmall,
         )
         Spacer(modifier = Modifier.height(32.dp))
-        LoginButtons()
+        LoginButtons(
+            onGoogleClick = onGoogleLoginClick,
+        )
     }
 }
 

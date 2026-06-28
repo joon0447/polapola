@@ -10,7 +10,7 @@ import com.joon.polapola.presentation.splash.SplashScreen
 import com.joon.polapola.presentation.theme.AppTheme
 
 @Composable
-fun AppNavHost() {
+fun AppNavHost(onGoogleLoginClick: () -> Unit = {}) {
     val navController = rememberNavController()
 
     NavHost(
@@ -29,7 +29,9 @@ fun AppNavHost() {
             )
         }
         composable<LoginRoute> {
-            LoginScreen()
+            LoginScreen(
+                onGoogleLoginClick = onGoogleLoginClick,
+            )
         }
     }
 }

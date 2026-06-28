@@ -12,7 +12,20 @@
           "package_name": "com.joon.polapola"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "830178571933-of0rk1bhu2o0bbgqmbqnvn8pobt1qev0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.joon.polapola",
+            "certificate_hash": "d683c1fd2d1b3ae4c5e84d731b665251daa4393d"
+          }
+        },
+        {
+          "client_id": "830178571933-giml3h9v1atv8l8dgfk6tnbggo6hpd0q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyApK_G7j0Mz9TToVIF4jdbBHJg1sI8313s"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "830178571933-giml3h9v1atv8l8dgfk6tnbggo6hpd0q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "830178571933-regtt3jmq3m1t2ta2k4b3fjjraapf7je.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.joon.polapola.Polapola"
+              }
+            }
+          ]
         }
       }
     }

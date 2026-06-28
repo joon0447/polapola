@@ -1,18 +1,81 @@
 import UIKit
 import SwiftUI
+import FirebaseCore
+import GoogleSignIn
 import Shared
 
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Self.Context) -> UIViewController {
-        MainViewControllerKt.MainViewController()
+        MainViewControllerKt.MainViewController(
+            onGoogleLoginClick: {
+                signInWithGoogle()
+            }
+        )
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Self.Context) {}
+
+    private func signInWithGoogle() {
+        guard let clientID = FirebaseApp.app()?.options.clientID else {
+            print("Google sign-in failed: missing Firebase client ID")
+            return
+        }
+        guard let presentingViewController = UIApplication.shared.topMostViewController else {
+            print("Google sign-in failed: missing presenting view controller")
+            return
+        }
+
+        GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { result, error in
+            if let error {
+                print("Google sign-in failed: \(error.localizedDescription)")
+                return
+            }
+            guard let user = result?.user,
+                  let idToken = user.idToken?.tokenString
+            else {
+                print("Google sign-in failed: missing token")
+                return
+            }
+
+            let accessToken = user.accessToken.tokenString
+            print("Google ID token received: \(idToken.prefix(12))...")
+            print("Google access token received: \(accessToken.prefix(12))...")
+        }
+    }
 }
 
 struct ContentView: View {
     var body: some View {
         ComposeView()
             .ignoresSafeArea()
+    }
+}
+
+private extension UIApplication {
+    var topMostViewController: UIViewController? {
+        connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first { $0.isKeyWindow }?
+            .rootViewController?
+            .topMostViewController
+    }
+}
+
+private extension UIViewController {
+    var topMostViewController: UIViewController {
+        if let presentedViewController {
+            return presentedViewController.topMostViewController
+        }
+        if let navigationController = self as? UINavigationController,
+           let visibleViewController = navigationController.visibleViewController {
+            return visibleViewController.topMostViewController
+        }
+        if let tabBarController = self as? UITabBarController,
+           let selectedViewController = tabBarController.selectedViewController {
+            return selectedViewController.topMostViewController
+        }
+        return self
     }
 }

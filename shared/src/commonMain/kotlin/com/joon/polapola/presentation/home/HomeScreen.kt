@@ -25,7 +25,6 @@ import com.joon.polapola.presentation.theme.AppTheme
 import org.jetbrains.compose.resources.painterResource
 import polapola.shared.generated.resources.Res
 import polapola.shared.generated.resources.camera_pola
-import polapola.shared.generated.resources.logo
 
 @Composable
 fun HomeScreen(
