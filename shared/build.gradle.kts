@@ -53,6 +53,7 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.auth)
+            implementation(libs.firebase.firestore)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -65,6 +66,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.navigation.compose)
             implementation(libs.gitlive.firebase.auth)
+            implementation(libs.gitlive.firebase.firestore)
             implementation(libs.kotlinx.serialization.core)
         }
         commonTest.dependencies {

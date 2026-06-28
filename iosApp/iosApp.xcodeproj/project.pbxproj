@@ -11,6 +11,7 @@
 		2B11A3000000000000000002 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2B11A3000000000000000003 /* GoogleService-Info.plist */; };
 		2B11A3000000000000000006 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2B11A3000000000000000007 /* FirebaseAuth */; };
 		2B11A3000000000000000008 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 2B11A300000000000000000A /* GoogleSignIn */; };
+		2B11A300000000000000000B /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 2B11A300000000000000000C /* FirebaseFirestore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 				2B11A3000000000000000001 /* FirebaseCore in Frameworks */,
 				2B11A3000000000000000006 /* FirebaseAuth in Frameworks */,
 				2B11A3000000000000000008 /* GoogleSignIn in Frameworks */,
+				2B11A300000000000000000B /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,6 +102,7 @@
 				2B11A3000000000000000005 /* FirebaseCore */,
 				2B11A3000000000000000007 /* FirebaseAuth */,
 				2B11A300000000000000000A /* GoogleSignIn */,
+				2B11A300000000000000000C /* FirebaseFirestore */,
 			);
 			productName = iosApp;
 			productReference = AE2A331CA1CD7736563FECD7 /* Polapola.app */;
@@ -423,6 +426,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2B11A3000000000000000009 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
+		};
+		2B11A300000000000000000C /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2B11A3000000000000000004 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
