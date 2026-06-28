@@ -9,7 +9,11 @@ data class RoomDocument(
     val name: String,
     val firstMetDate: String,
     val ownerUid: String,
+    val partnerUid: String?,
     val memberUids: List<String>,
+    val inviteCode: String,
+    val status: String,
     val createdAt: BaseTimestamp,
     val updatedAt: BaseTimestamp,
+    val matchedAt: BaseTimestamp?,
 )

@@ -10,10 +10,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.joon.polapola.data.auth.AuthSessionRepository
 import com.joon.polapola.data.room.RoomRepository
 import com.joon.polapola.presentation.createroom.CreateRoomScreen
 import com.joon.polapola.presentation.home.HomeScreen
+import com.joon.polapola.presentation.invite.InviteScreen
 import com.joon.polapola.presentation.login.LoginScreen
 import com.joon.polapola.presentation.splash.SplashScreen
 import com.joon.polapola.presentation.theme.AppTheme
@@ -89,13 +91,34 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
                                 firstMetDate = firstDate,
                                 ownerUid = user.uid,
                             )
-                        }.onSuccess {
-                            navController.popBackStack()
+                        }.onSuccess { createdRoom ->
+                            navController.navigate(InviteRoute(inviteCode = createdRoom.inviteCode)) {
+                                popUpTo<CreateRoomRoute> {
+                                    inclusive = true
+                                }
+                            }
                         }
                         isCreating = false
                     }
                 },
                 isCreating = isCreating,
+            )
+        }
+        composable<InviteRoute> { backStackEntry ->
+            val inviteRoute = backStackEntry.toRoute<InviteRoute>()
+
+            InviteScreen(
+                inviteCode = inviteRoute.inviteCode,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onHomeClick = {
+                    navController.navigate(HomeRoute) {
+                        popUpTo<HomeRoute> {
+                            inclusive = true
+                        }
+                    }
+                },
             )
         }
     }
