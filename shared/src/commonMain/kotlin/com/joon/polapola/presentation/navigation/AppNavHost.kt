@@ -5,12 +5,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.joon.polapola.presentation.home.HomeScreen
 import com.joon.polapola.presentation.login.LoginScreen
 import com.joon.polapola.presentation.splash.SplashScreen
 import com.joon.polapola.presentation.theme.AppTheme
 
 @Composable
-fun AppNavHost(onGoogleLoginClick: () -> Unit = {}) {
+fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> onLoginSucceeded() }) {
     val navController = rememberNavController()
 
     NavHost(
@@ -30,8 +31,19 @@ fun AppNavHost(onGoogleLoginClick: () -> Unit = {}) {
         }
         composable<LoginRoute> {
             LoginScreen(
-                onGoogleLoginClick = onGoogleLoginClick,
+                onGoogleLoginClick = {
+                    onGoogleLoginClick {
+                        navController.navigate(HomeRoute) {
+                            popUpTo<LoginRoute> {
+                                inclusive = true
+                            }
+                        }
+                    }
+                },
             )
+        }
+        composable<HomeRoute> {
+            HomeScreen()
         }
     }
 }

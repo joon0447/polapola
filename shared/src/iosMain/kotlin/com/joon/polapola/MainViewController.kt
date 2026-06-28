@@ -3,7 +3,7 @@ package com.joon.polapola
 import androidx.compose.ui.window.ComposeUIViewController
 
 @Suppress("ktlint:standard:function-naming")
-fun MainViewController(onGoogleLoginClick: () -> Unit = {}) =
+fun MainViewController(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> onLoginSucceeded() }) =
     ComposeUIViewController {
         App(
             onGoogleLoginClick = onGoogleLoginClick,

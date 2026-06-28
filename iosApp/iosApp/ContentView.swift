@@ -9,15 +9,17 @@ struct ComposeView: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Self.Context) -> UIViewController {
         MainViewControllerKt.MainViewController(
-            onGoogleLoginClick: {
-                signInWithGoogle()
+            onGoogleLoginClick: { onLoginSucceeded in
+                signInWithGoogle {
+                    _ = onLoginSucceeded()
+                }
             }
         )
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Self.Context) {}
 
-    private func signInWithGoogle() {
+    private func signInWithGoogle(onLoginSucceeded: @escaping () -> Void) {
         guard let clientID = FirebaseApp.app()?.options.clientID else {
             print("Google sign-in failed: missing Firebase client ID")
             return
@@ -52,6 +54,7 @@ struct ComposeView: UIViewControllerRepresentable {
                 }
 
                 print("Firebase sign-in succeeded: uid=\(user.uid), email=\(user.email ?? "nil")")
+                onLoginSucceeded()
             }
         }
     }

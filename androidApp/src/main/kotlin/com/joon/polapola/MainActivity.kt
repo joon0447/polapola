@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
     }
 
-    private fun requestGoogleIdToken() {
+    private fun requestGoogleIdToken(onLoginSucceeded: () -> Unit) {
         googleSignInScope.launch {
             runCatching {
                 googleAuthRepository.signInWithGoogle(
@@ -47,6 +47,7 @@ class MainActivity : ComponentActivity() {
                 )
             }.onSuccess { user ->
                 Log.d(TAG, "Firebase sign-in succeeded: uid=${user.uid}, email=${user.email}")
+                onLoginSucceeded()
             }.onFailure { throwable ->
                 Log.w(TAG, "Google sign-in failed", throwable)
             }

@@ -5,7 +5,7 @@ import com.joon.polapola.presentation.navigation.AppNavHost
 import com.joon.polapola.presentation.theme.AppTheme
 
 @Composable
-fun App(onGoogleLoginClick: () -> Unit = {}) {
+fun App(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> onLoginSucceeded() }) {
     AppTheme {
         AppNavHost(
             onGoogleLoginClick = onGoogleLoginClick,
