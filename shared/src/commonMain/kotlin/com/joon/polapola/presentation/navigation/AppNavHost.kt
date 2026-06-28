@@ -1,13 +1,18 @@
 package com.joon.polapola.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.joon.polapola.data.auth.AuthSessionRepository
+import com.joon.polapola.data.room.RoomRepository
+import com.joon.polapola.presentation.createroom.CreateRoomScreen
 import com.joon.polapola.presentation.home.HomeScreen
 import com.joon.polapola.presentation.login.LoginScreen
 import com.joon.polapola.presentation.splash.SplashScreen
@@ -18,6 +23,7 @@ import kotlinx.coroutines.launch
 fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> onLoginSucceeded() }) {
     val navController = rememberNavController()
     val authSessionRepository = remember { AuthSessionRepository() }
+    val roomRepository = remember { RoomRepository() }
     val coroutineScope = rememberCoroutineScope()
 
     NavHost(
@@ -58,7 +64,39 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
             )
         }
         composable<HomeRoute> {
-            HomeScreen()
+            HomeScreen(
+                onCreateRoomClick = {
+                    navController.navigate(CreateRoomRoute)
+                },
+            )
+        }
+        composable<CreateRoomRoute> {
+            var isCreating by remember { mutableStateOf(false) }
+
+            CreateRoomScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onCreateRoomClick = { roomName, firstDate ->
+                    if (isCreating) return@CreateRoomScreen
+
+                    coroutineScope.launch {
+                        isCreating = true
+                        runCatching {
+                            val user = authSessionRepository.getSignedInUser() ?: error("Signed-in user is required.")
+                            roomRepository.createRoom(
+                                name = roomName,
+                                firstMetDate = firstDate,
+                                ownerUid = user.uid,
+                            )
+                        }.onSuccess {
+                            navController.popBackStack()
+                        }
+                        isCreating = false
+                    }
+                },
+                isCreating = isCreating,
+            )
         }
     }
 }
