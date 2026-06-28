@@ -14,7 +14,6 @@ import androidx.navigation.toRoute
 import com.joon.polapola.data.auth.AuthSessionRepository
 import com.joon.polapola.data.room.RoomRepository
 import com.joon.polapola.presentation.createroom.CreateRoomScreen
-import com.joon.polapola.presentation.home.HomeScreen
 import com.joon.polapola.presentation.invite.InviteScreen
 import com.joon.polapola.presentation.login.LoginScreen
 import com.joon.polapola.presentation.splash.SplashScreen
@@ -40,7 +39,7 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
                             if (authSessionRepository.getSignedInUser() == null) {
                                 LoginRoute
                             } else {
-                                HomeRoute
+                                MainRoute
                             }
 
                         navController.navigate(route) {
@@ -56,7 +55,7 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
             LoginScreen(
                 onGoogleLoginClick = {
                     onGoogleLoginClick {
-                        navController.navigate(HomeRoute) {
+                        navController.navigate(MainRoute) {
                             popUpTo<LoginRoute> {
                                 inclusive = true
                             }
@@ -65,8 +64,8 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
                 },
             )
         }
-        composable<HomeRoute> {
-            HomeScreen(
+        composable<MainRoute> {
+            MainScaffold(
                 onCreateRoomClick = {
                     navController.navigate(CreateRoomRoute)
                 },
@@ -113,8 +112,8 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
                     navController.popBackStack()
                 },
                 onHomeClick = {
-                    navController.navigate(HomeRoute) {
-                        popUpTo<HomeRoute> {
+                    navController.navigate(MainRoute) {
+                        popUpTo<MainRoute> {
                             inclusive = true
                         }
                     }
