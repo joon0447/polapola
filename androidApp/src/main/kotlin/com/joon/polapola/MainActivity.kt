@@ -12,6 +12,7 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.joon.polapola.data.auth.GoogleAuthRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val googleSignInScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val googleAuthRepository = GoogleAuthRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -40,9 +42,11 @@ class MainActivity : ComponentActivity() {
     private fun requestGoogleIdToken() {
         googleSignInScope.launch {
             runCatching {
-                getGoogleIdToken()
-            }.onSuccess { idToken ->
-                Log.d(TAG, "Google ID token received: ${idToken.take(TOKEN_LOG_PREFIX_LENGTH)}...")
+                googleAuthRepository.signInWithGoogle(
+                    idToken = getGoogleIdToken(),
+                )
+            }.onSuccess { user ->
+                Log.d(TAG, "Firebase sign-in succeeded: uid=${user.uid}, email=${user.email}")
             }.onFailure { throwable ->
                 Log.w(TAG, "Google sign-in failed", throwable)
             }
@@ -85,7 +89,6 @@ class MainActivity : ComponentActivity() {
 
     private companion object {
         private const val TAG = "MainActivity"
-        private const val TOKEN_LOG_PREFIX_LENGTH = 12
     }
 }
 

@@ -8,11 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		2B11A3000000000000000001 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2B11A3000000000000000005 /* FirebaseCore */; };
+		2B11A3000000000000000002 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2B11A3000000000000000003 /* GoogleService-Info.plist */; };
 		2B11A3000000000000000006 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2B11A3000000000000000007 /* FirebaseAuth */; };
 		2B11A3000000000000000008 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 2B11A300000000000000000A /* GoogleSignIn */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2B11A3000000000000000003 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AE2A331CA1CD7736563FECD7 /* Polapola.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Polapola.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -61,6 +63,7 @@
 			children = (
 				A2FE91A526B1FFFC1D381C9F /* Configuration */,
 				7063F5AF69C7A8D9CD6422FB /* iosApp */,
+				2B11A3000000000000000003 /* GoogleService-Info.plist */,
 				2C066B7B2241BF9018AE0A56 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -145,6 +148,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B11A3000000000000000002 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

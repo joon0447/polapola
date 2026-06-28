@@ -5,6 +5,8 @@ import GoogleSignIn
 import Shared
 
 struct ComposeView: UIViewControllerRepresentable {
+    private let googleAuthRepository = GoogleAuthRepository()
+
     func makeUIViewController(context: Self.Context) -> UIViewController {
         MainViewControllerKt.MainViewController(
             onGoogleLoginClick: {
@@ -39,8 +41,18 @@ struct ComposeView: UIViewControllerRepresentable {
             }
 
             let accessToken = user.accessToken.tokenString
-            print("Google ID token received: \(idToken.prefix(12))...")
-            print("Google access token received: \(accessToken.prefix(12))...")
+            googleAuthRepository.signInWithGoogle(idToken: idToken, accessToken: accessToken) { user, error in
+                if let error {
+                    print("Firebase sign-in failed: \(error.localizedDescription)")
+                    return
+                }
+                guard let user else {
+                    print("Firebase sign-in failed: missing user")
+                    return
+                }
+
+                print("Firebase sign-in succeeded: uid=\(user.uid), email=\(user.email ?? "nil")")
+            }
         }
     }
 }
