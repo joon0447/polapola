@@ -52,14 +52,27 @@ import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 
 @Composable
-fun WeeklyDateRecords(dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList()) {
-    val lastWeekPhotoSummaries =
-        remember(dailyPhotoSummaries) {
-            val lastWeekDates = lastWeekDateSet()
-
-            dailyPhotoSummaries.filter { summary -> summary.date in lastWeekDates }
+fun WeeklyDateRecords(
+    selectedWeekStart: LocalDate =
+        Clock
+            .System
+            .todayIn(TimeZone.currentSystemDefault())
+            .startOfWeek(),
+    dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList(),
+) {
+    val today =
+        remember {
+            Clock.System.todayIn(TimeZone.currentSystemDefault())
         }
-    val lastWeekPhotoCount = lastWeekPhotoSummaries.sumOf { summary -> summary.imageCount }
+    val currentWeekStart = remember(today) { today.startOfWeek() }
+    val selectedWeekPhotoSummaries =
+        remember(dailyPhotoSummaries, selectedWeekStart) {
+            val selectedWeekDates = selectedWeekStart.weekDateSet()
+
+            dailyPhotoSummaries.filter { summary -> summary.date in selectedWeekDates }
+        }
+    val selectedWeekPhotoCount = selectedWeekPhotoSummaries.sumOf { summary -> summary.imageCount }
+    val sectionTitle = "${selectedWeekStart.toWeekTitle(currentWeekStart = currentWeekStart)} 사진첩"
 
     Column(
         modifier =
@@ -77,7 +90,7 @@ fun WeeklyDateRecords(dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList()
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    text = "저번 주 사진첩",
+                    text = sectionTitle,
                     color = Color(0xFF2A1B24),
                     fontSize = 20.sp,
                     lineHeight = 21.sp,
@@ -85,7 +98,7 @@ fun WeeklyDateRecords(dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList()
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
-                    text = "우리 둘이 저장한 사진 ${lastWeekPhotoCount}장",
+                    text = "우리 둘이 저장한 사진 ${selectedWeekPhotoCount}장",
                     color = Color(0xFF8B6879),
                     fontSize = 11.sp,
                     lineHeight = 13.sp,
@@ -93,7 +106,7 @@ fun WeeklyDateRecords(dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList()
                 )
             }
         }
-        if (lastWeekPhotoSummaries.isEmpty()) {
+        if (selectedWeekPhotoSummaries.isEmpty()) {
             EmptyPhotoGrid(
                 modifier =
                     Modifier
@@ -112,7 +125,7 @@ fun WeeklyDateRecords(dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList()
                 verticalArrangement = Arrangement.spacedBy(9.dp),
             ) {
                 items(
-                    items = lastWeekPhotoSummaries,
+                    items = selectedWeekPhotoSummaries,
                     key = { summary -> summary.date },
                 ) { summary ->
                     DailyPhotoCard(summary = summary)
@@ -237,7 +250,7 @@ private fun EmptyPhotoGrid(modifier: Modifier = Modifier) {
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(
-                text = "저번 주에 저장한 데이트 사진이 없어요",
+                text = "선택한 주에 저장한 데이트 사진이 없어요",
                 color = Color(0xFF8B6879),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
@@ -268,16 +281,38 @@ private fun String.toDisplayDate(): DisplayDate {
     )
 }
 
-private fun lastWeekDateSet(): Set<String> {
-    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-    val lastWeekMonday = today.startOfWeek().minus(DatePeriod(days = DAYS_IN_WEEK))
-
-    return List(DAYS_IN_WEEK) { index ->
-        lastWeekMonday.plus(DatePeriod(days = index)).toString()
+private fun LocalDate.weekDateSet(): Set<String> =
+    List(DAYS_IN_WEEK) { index ->
+        plus(DatePeriod(days = index)).toString()
     }.toSet()
-}
 
 private fun LocalDate.startOfWeek(): LocalDate = minus(DatePeriod(days = dayOfWeek.toIsoDayNumber() - 1))
+
+private fun LocalDate.toWeekTitle(currentWeekStart: LocalDate): String {
+    val weeksAgo = weeksUntil(currentWeekStart)
+
+    return when (weeksAgo) {
+        0 -> "이번 주"
+        1 -> "저번 주"
+        2 -> "2주 전"
+        3 -> "3주 전"
+        else -> "${month.ordinal + 1}월 ${weekOfMonth()}주차"
+    }
+}
+
+private fun LocalDate.weeksUntil(other: LocalDate): Int {
+    var cursor = this
+    var weekCount = 0
+
+    while (cursor < other) {
+        cursor = cursor.plus(DatePeriod(days = DAYS_IN_WEEK))
+        weekCount += 1
+    }
+
+    return weekCount
+}
+
+private fun LocalDate.weekOfMonth(): Int = ((day - 1) / DAYS_IN_WEEK) + 1
 
 private fun DayOfWeek.toIsoDayNumber(): Int =
     when (this) {

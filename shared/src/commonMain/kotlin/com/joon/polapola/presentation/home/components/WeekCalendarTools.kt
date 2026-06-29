@@ -63,24 +63,35 @@ import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WeekCalendarTools(photoDates: List<String> = emptyList()) {
+fun WeekCalendarTools(
+    photoDates: List<String> = emptyList(),
+    selectedWeekStart: LocalDate? = null,
+    onWeekStartChange: (LocalDate) -> Unit = {},
+) {
     val today =
         remember {
             Clock.System.todayIn(TimeZone.currentSystemDefault())
         }
     val currentWeekStart = remember(today) { today.startOfWeek() }
     val photoDateSet = remember(photoDates) { photoDates.toSet() }
-    var selectedWeekStart by remember { mutableStateOf(currentWeekStart) }
+    var internalSelectedWeekStart by remember { mutableStateOf(currentWeekStart) }
+    val visibleWeekStart = selectedWeekStart ?: internalSelectedWeekStart
     var weekSlideDirection by remember { mutableStateOf(WeekSlideDirection.NONE) }
     var showDatePicker by remember { mutableStateOf(false) }
     var dragAmount by remember { mutableFloatStateOf(0f) }
+    val updateSelectedWeekStart: (LocalDate) -> Unit = { nextWeekStart ->
+        if (selectedWeekStart == null) {
+            internalSelectedWeekStart = nextWeekStart
+        }
+        onWeekStartChange(nextWeekStart)
+    }
 
     Column(
         modifier =
             Modifier
                 .fillMaxWidth()
                 .height(92.dp)
-                .pointerInput(selectedWeekStart, currentWeekStart) {
+                .pointerInput(visibleWeekStart, currentWeekStart) {
                     detectHorizontalDragGestures(
                         onDragStart = {
                             dragAmount = 0f
@@ -90,13 +101,13 @@ fun WeekCalendarTools(photoDates: List<String> = emptyList()) {
                         },
                         onDragEnd = {
                             val nextWeekStart =
-                                selectedWeekStart.swipedWeekStart(
+                                visibleWeekStart.swipedWeekStart(
                                     dragAmount = dragAmount,
                                     currentWeekStart = currentWeekStart,
                                 )
-                            if (nextWeekStart != selectedWeekStart) {
-                                weekSlideDirection = nextWeekStart.toWeekSlideDirection(selectedWeekStart)
-                                selectedWeekStart = nextWeekStart
+                            if (nextWeekStart != visibleWeekStart) {
+                                weekSlideDirection = nextWeekStart.toWeekSlideDirection(visibleWeekStart)
+                                updateSelectedWeekStart(nextWeekStart)
                             }
                             dragAmount = 0f
                         },
@@ -111,7 +122,7 @@ fun WeekCalendarTools(photoDates: List<String> = emptyList()) {
         ) {
             Text(
                 text =
-                    selectedWeekStart.toWeekTitle(
+                    visibleWeekStart.toWeekTitle(
                         currentWeekStart = currentWeekStart,
                     ),
                 color = Color(0xFF1A1A1A),
@@ -144,7 +155,7 @@ fun WeekCalendarTools(photoDates: List<String> = emptyList()) {
             }
         }
         AnimatedContent(
-            targetState = selectedWeekStart,
+            targetState = visibleWeekStart,
             transitionSpec = {
                 val direction = weekSlideDirection
                 val enterOffset = if (direction == WeekSlideDirection.NEXT) { width: Int -> width } else { width: Int -> -width }
@@ -180,7 +191,7 @@ fun WeekCalendarTools(photoDates: List<String> = emptyList()) {
     if (showDatePicker) {
         val datePickerState =
             rememberDatePickerState(
-                initialSelectedDateMillis = selectedWeekStart.toUtcEpochMilliseconds(),
+                initialSelectedDateMillis = visibleWeekStart.toUtcEpochMilliseconds(),
                 selectableDates =
                     object : SelectableDates {
                         override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis <= today.toUtcEpochMilliseconds()
@@ -201,9 +212,9 @@ fun WeekCalendarTools(photoDates: List<String> = emptyList()) {
                             ?.takeIf { selectedDate -> selectedDate <= today }
                             ?.let { selectedDate ->
                                 val nextWeekStart = selectedDate.startOfWeek().coerceAtMost(currentWeekStart)
-                                if (nextWeekStart != selectedWeekStart) {
-                                    weekSlideDirection = nextWeekStart.toWeekSlideDirection(selectedWeekStart)
-                                    selectedWeekStart = nextWeekStart
+                                if (nextWeekStart != visibleWeekStart) {
+                                    weekSlideDirection = nextWeekStart.toWeekSlideDirection(visibleWeekStart)
+                                    updateSelectedWeekStart(nextWeekStart)
                                 }
                             }
                         showDatePicker = false
