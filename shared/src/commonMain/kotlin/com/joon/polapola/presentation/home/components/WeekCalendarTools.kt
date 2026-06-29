@@ -1,7 +1,14 @@
 package com.joon.polapola.presentation.home.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,11 +18,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -26,6 +43,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,36 +53,55 @@ import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
+import kotlin.time.Instant
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeekCalendarTools(photoDates: List<String> = emptyList()) {
-    val photoDateSet = remember(photoDates) { photoDates.toSet() }
-    val weekDays =
-        remember(photoDateSet) {
-            val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-            val lastWeekMonday = today.startOfWeek().minus(DatePeriod(days = DAYS_IN_WEEK))
-
-            List(DAYS_IN_WEEK) { index ->
-                val date = lastWeekMonday.plus(DatePeriod(days = index))
-
-                WeekDay(
-                    label = date.dayOfWeek.toKoreanShortText(),
-                    date = date.day.toString(),
-                    isoDate = date.toString(),
-                    hasRecord = date.toString() in photoDateSet,
-                )
-            }
+    val today =
+        remember {
+            Clock.System.todayIn(TimeZone.currentSystemDefault())
         }
+    val currentWeekStart = remember(today) { today.startOfWeek() }
+    val photoDateSet = remember(photoDates) { photoDates.toSet() }
+    var selectedWeekStart by remember { mutableStateOf(currentWeekStart) }
+    var weekSlideDirection by remember { mutableStateOf(WeekSlideDirection.NONE) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var dragAmount by remember { mutableFloatStateOf(0f) }
 
     Column(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(92.dp),
+                .height(92.dp)
+                .pointerInput(selectedWeekStart, currentWeekStart) {
+                    detectHorizontalDragGestures(
+                        onDragStart = {
+                            dragAmount = 0f
+                        },
+                        onHorizontalDrag = { _, dragDistance ->
+                            dragAmount += dragDistance
+                        },
+                        onDragEnd = {
+                            val nextWeekStart =
+                                selectedWeekStart.swipedWeekStart(
+                                    dragAmount = dragAmount,
+                                    currentWeekStart = currentWeekStart,
+                                )
+                            if (nextWeekStart != selectedWeekStart) {
+                                weekSlideDirection = nextWeekStart.toWeekSlideDirection(selectedWeekStart)
+                                selectedWeekStart = nextWeekStart
+                            }
+                            dragAmount = 0f
+                        },
+                    )
+                },
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Row(
@@ -73,7 +110,10 @@ fun WeekCalendarTools(photoDates: List<String> = emptyList()) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "저번 주",
+                text =
+                    selectedWeekStart.toWeekTitle(
+                        currentWeekStart = currentWeekStart,
+                    ),
                 color = Color(0xFF1A1A1A),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.ExtraBold,
@@ -86,6 +126,7 @@ fun WeekCalendarTools(photoDates: List<String> = emptyList()) {
                         .height(32.dp),
                 shape = CircleShape,
                 color = Color(0xFFF3F4F6),
+                onClick = { showDatePicker = true },
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
@@ -102,16 +143,82 @@ fun WeekCalendarTools(photoDates: List<String> = emptyList()) {
                 }
             }
         }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(7.dp),
-        ) {
-            weekDays.forEach { day ->
-                WeekDayCell(
-                    day = day,
-                    modifier = Modifier.weight(1f),
-                )
+        AnimatedContent(
+            targetState = selectedWeekStart,
+            transitionSpec = {
+                val direction = weekSlideDirection
+                val enterOffset = if (direction == WeekSlideDirection.NEXT) { width: Int -> width } else { width: Int -> -width }
+                val exitOffset = if (direction == WeekSlideDirection.NEXT) { width: Int -> -width } else { width: Int -> width }
+
+                slideInHorizontally(
+                    animationSpec = tween(durationMillis = WEEK_SLIDE_ANIMATION_MILLIS),
+                    initialOffsetX = enterOffset,
+                ) togetherWith
+                    slideOutHorizontally(
+                        animationSpec = tween(durationMillis = WEEK_SLIDE_ANIMATION_MILLIS),
+                        targetOffsetX = exitOffset,
+                    ) using
+                    SizeTransform(clip = false)
+            },
+        ) { animatedWeekStart ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(7.dp),
+            ) {
+                animatedWeekStart
+                    .toWeekDays(photoDateSet = photoDateSet)
+                    .forEach { day ->
+                        WeekDayCell(
+                            day = day,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
             }
+        }
+    }
+
+    if (showDatePicker) {
+        val datePickerState =
+            rememberDatePickerState(
+                initialSelectedDateMillis = selectedWeekStart.toUtcEpochMilliseconds(),
+                selectableDates =
+                    object : SelectableDates {
+                        override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis <= today.toUtcEpochMilliseconds()
+                    },
+            )
+
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    enabled =
+                        datePickerState.selectedDateMillis?.let { selectedDateMillis ->
+                            selectedDateMillis <= today.toUtcEpochMilliseconds()
+                        } ?: false,
+                    onClick = {
+                        datePickerState.selectedDateMillis
+                            ?.toLocalDate()
+                            ?.takeIf { selectedDate -> selectedDate <= today }
+                            ?.let { selectedDate ->
+                                val nextWeekStart = selectedDate.startOfWeek().coerceAtMost(currentWeekStart)
+                                if (nextWeekStart != selectedWeekStart) {
+                                    weekSlideDirection = nextWeekStart.toWeekSlideDirection(selectedWeekStart)
+                                    selectedWeekStart = nextWeekStart
+                                }
+                            }
+                        showDatePicker = false
+                    },
+                ) {
+                    Text(text = "확인")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text(text = "취소")
+                }
+            },
+        ) {
+            DatePicker(state = datePickerState)
         }
     }
 }
@@ -165,6 +272,78 @@ private fun CalendarIcon() {
 }
 
 private fun LocalDate.startOfWeek(): LocalDate = minus(DatePeriod(days = dayOfWeek.toIsoDayNumber() - 1))
+
+private fun LocalDate.coerceAtMost(maximumValue: LocalDate): LocalDate =
+    if (this > maximumValue) {
+        maximumValue
+    } else {
+        this
+    }
+
+private fun LocalDate.toWeekTitle(currentWeekStart: LocalDate): String {
+    val weeksAgo = weeksUntil(currentWeekStart)
+
+    return when (weeksAgo) {
+        0 -> "이번 주"
+        1 -> "저번 주"
+        2 -> "2주 전"
+        3 -> "3주 전"
+        else -> "${month.ordinal + 1}월 ${weekOfMonth()}주차"
+    }
+}
+
+private fun LocalDate.weeksUntil(other: LocalDate): Int {
+    var cursor = this
+    var weekCount = 0
+
+    while (cursor < other) {
+        cursor = cursor.plus(DatePeriod(days = DAYS_IN_WEEK))
+        weekCount += 1
+    }
+
+    return weekCount
+}
+
+private fun LocalDate.weekOfMonth(): Int = ((day - 1) / DAYS_IN_WEEK) + 1
+
+private fun LocalDate.swipedWeekStart(
+    dragAmount: Float,
+    currentWeekStart: LocalDate,
+): LocalDate =
+    when {
+        dragAmount <= -SWIPE_THRESHOLD -> plus(DatePeriod(days = DAYS_IN_WEEK)).coerceAtMost(currentWeekStart)
+        dragAmount >= SWIPE_THRESHOLD -> minus(DatePeriod(days = DAYS_IN_WEEK))
+        else -> this
+    }
+
+private fun LocalDate.toWeekSlideDirection(previousWeekStart: LocalDate): WeekSlideDirection =
+    when {
+        this > previousWeekStart -> WeekSlideDirection.NEXT
+        this < previousWeekStart -> WeekSlideDirection.PREVIOUS
+        else -> WeekSlideDirection.NONE
+    }
+
+private fun LocalDate.toWeekDays(photoDateSet: Set<String>): List<WeekDay> =
+    List(DAYS_IN_WEEK) { index ->
+        val date = plus(DatePeriod(days = index))
+
+        WeekDay(
+            label = date.dayOfWeek.toKoreanShortText(),
+            date = date.day.toString(),
+            isoDate = date.toString(),
+            hasRecord = date.toString() in photoDateSet,
+        )
+    }
+
+private fun LocalDate.toUtcEpochMilliseconds(): Long =
+    atStartOfDayIn(TimeZone.UTC)
+        .toEpochMilliseconds()
+
+private fun Long.toLocalDate(): LocalDate =
+    Instant
+        .fromEpochMilliseconds(this)
+        .toLocalDateTime(TimeZone.UTC)
+        .date
 
 private fun DayOfWeek.toIsoDayNumber(): Int =
     when (this) {
@@ -234,7 +413,15 @@ private data class WeekDay(
     val hasRecord: Boolean,
 )
 
+private enum class WeekSlideDirection {
+    PREVIOUS,
+    NEXT,
+    NONE,
+}
+
 private const val DAYS_IN_WEEK = 7
+private const val SWIPE_THRESHOLD = 45f
+private const val WEEK_SLIDE_ANIMATION_MILLIS = 240
 
 @Preview
 @Composable
