@@ -1,4 +1,4 @@
-package com.joon.polapola.presentation.navigation
+package com.joon.polapola.presentation.navigation.route
 
 import kotlinx.serialization.Serializable
 

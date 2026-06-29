@@ -16,6 +16,11 @@ import com.joon.polapola.data.room.RoomRepository
 import com.joon.polapola.presentation.createroom.CreateRoomScreen
 import com.joon.polapola.presentation.invite.InviteScreen
 import com.joon.polapola.presentation.login.LoginScreen
+import com.joon.polapola.presentation.navigation.route.CreateRoomRoute
+import com.joon.polapola.presentation.navigation.route.InviteRoute
+import com.joon.polapola.presentation.navigation.route.LoginRoute
+import com.joon.polapola.presentation.navigation.route.MainRoute
+import com.joon.polapola.presentation.navigation.route.SplashRoute
 import com.joon.polapola.presentation.splash.SplashScreen
 import com.joon.polapola.presentation.theme.AppTheme
 import kotlinx.coroutines.launch

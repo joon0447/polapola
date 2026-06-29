@@ -28,6 +28,9 @@ import com.joon.polapola.data.room.RoomRepository
 import com.joon.polapola.presentation.components.PolaBottomNavigationBar
 import com.joon.polapola.presentation.components.PolaBottomNavigationTab
 import com.joon.polapola.presentation.home.HomeScreen
+import com.joon.polapola.presentation.navigation.route.HomeRoute
+import com.joon.polapola.presentation.navigation.route.MyPageRoute
+import com.joon.polapola.presentation.navigation.route.RecordRoute
 import com.joon.polapola.presentation.theme.AppTheme
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
