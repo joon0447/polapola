@@ -24,17 +24,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.joon.polapola.data.place.DatePlace
 import com.joon.polapola.presentation.imagepicker.PickedImage
 import com.joon.polapola.presentation.imagepicker.rememberImagePickerLauncher
 import com.joon.polapola.presentation.record.components.PhotoUploadCard
-import com.joon.polapola.presentation.record.components.RecordChevronRightIcon
 import com.joon.polapola.presentation.record.components.RecordDateField
 import com.joon.polapola.presentation.record.components.RecordEditIcon
 import com.joon.polapola.presentation.record.components.RecordHeader
 import com.joon.polapola.presentation.record.components.RecordHeartIcon
-import com.joon.polapola.presentation.record.components.RecordLocationIcon
+import com.joon.polapola.presentation.record.components.RecordPlaceField
 import com.joon.polapola.presentation.record.components.RecordSaveButton
 import com.joon.polapola.presentation.record.components.RecordTextField
+import com.joon.polapola.presentation.record.place.PlaceSearchScreen
 import com.joon.polapola.presentation.theme.AppTheme
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -58,10 +59,11 @@ fun RecordScreen(
         }
     var selectedDate by remember { mutableStateOf(today) }
     var selectedImages by remember { mutableStateOf(emptyList<PickedImage>()) }
-    var place by remember { mutableStateOf("") }
+    var selectedPlace by remember { mutableStateOf<DatePlace?>(null) }
     var memo by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
     var showPhotoSourcePicker by remember { mutableStateOf(false) }
+    var showPlaceSearch by remember { mutableStateOf(false) }
     val imagePickerLauncher =
         rememberImagePickerLauncher { pickedImages ->
             selectedImages =
@@ -72,7 +74,18 @@ fun RecordScreen(
         rememberDatePickerState(
             initialSelectedDateMillis = Clock.System.now().toEpochMilliseconds(),
         )
-    val isSaveEnabled = place.isNotBlank() || memo.isNotBlank()
+    val isSaveEnabled = selectedPlace != null || memo.isNotBlank() || selectedImages.isNotEmpty()
+
+    if (showPlaceSearch) {
+        PlaceSearchScreen(
+            onBackClick = { showPlaceSearch = false },
+            onPlaceSelected = { place ->
+                selectedPlace = place
+                showPlaceSearch = false
+            },
+        )
+        return
+    }
 
     Column(
         modifier =
@@ -94,13 +107,9 @@ fun RecordScreen(
                 value = selectedDate.toDisplayText(),
                 onClick = { showDatePicker = true },
             )
-            RecordTextField(
-                label = "장소",
-                value = place,
-                placeholder = "여기가 어디인가요?",
-                onValueChange = { place = it },
-                leadingIcon = { RecordLocationIcon() },
-                trailingIcon = { RecordChevronRightIcon() },
+            RecordPlaceField(
+                place = selectedPlace,
+                onClick = { showPlaceSearch = true },
             )
             RecordTextField(
                 label = "메모",
@@ -120,7 +129,7 @@ fun RecordScreen(
                 onSaveClick(
                     DateRecordInput(
                         date = selectedDate.toString(),
-                        place = place.trim(),
+                        place = selectedPlace,
                         memo = memo.trim(),
                         images = selectedImages,
                     ),

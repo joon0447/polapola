@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.joon.polapola.data.place.DatePlace
 import com.joon.polapola.presentation.theme.AppTheme
 
 @Composable
@@ -44,6 +45,26 @@ fun RecordDateField(
             label = "데이트 날짜",
             value = value,
             placeholder = "날짜를 선택해 주세요",
+        )
+    }
+}
+
+@Composable
+fun RecordPlaceField(
+    place: DatePlace?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    RecordFieldContainer(
+        modifier = modifier.clickable(onClick = onClick),
+        height = 64.dp,
+        leadingIcon = { RecordLocationIcon() },
+        trailingIcon = { RecordChevronRightIcon() },
+    ) {
+        RecordFieldTexts(
+            label = "장소",
+            value = place?.name.orEmpty(),
+            placeholder = "장소를 검색해 주세요",
         )
     }
 }
