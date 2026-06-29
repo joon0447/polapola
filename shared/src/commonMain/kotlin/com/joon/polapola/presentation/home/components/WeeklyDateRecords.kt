@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -60,19 +59,12 @@ fun WeeklyDateRecords(
             .startOfWeek(),
     dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList(),
 ) {
-    val today =
-        remember {
-            Clock.System.todayIn(TimeZone.currentSystemDefault())
-        }
-    val currentWeekStart = remember(today) { today.startOfWeek() }
     val selectedWeekPhotoSummaries =
         remember(dailyPhotoSummaries, selectedWeekStart) {
             val selectedWeekDates = selectedWeekStart.weekDateSet()
 
             dailyPhotoSummaries.filter { summary -> summary.date in selectedWeekDates }
         }
-    val selectedWeekPhotoCount = selectedWeekPhotoSummaries.sumOf { summary -> summary.imageCount }
-    val sectionTitle = "${selectedWeekStart.toWeekTitle(currentWeekStart = currentWeekStart)} 사진첩"
 
     Column(
         modifier =
@@ -81,31 +73,6 @@ fun WeeklyDateRecords(
                 .height(300.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(38.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(
-                    text = sectionTitle,
-                    color = Color(0xFF2A1B24),
-                    fontSize = 20.sp,
-                    lineHeight = 21.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    text = "우리 둘이 저장한 사진 ${selectedWeekPhotoCount}장",
-                    color = Color(0xFF8B6879),
-                    fontSize = 11.sp,
-                    lineHeight = 13.sp,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-        }
         if (selectedWeekPhotoSummaries.isEmpty()) {
             EmptyPhotoGrid(
                 modifier =
