@@ -5,6 +5,7 @@ import com.joon.polapola.data.room.RoomRepository
 import com.joon.polapola.presentation.imagepicker.PickedImage
 import com.joon.polapola.presentation.record.DateRecordInput
 import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.firestore.Direction
 import dev.gitlive.firebase.firestore.Timestamp
 import dev.gitlive.firebase.firestore.firestore
 import dev.gitlive.firebase.storage.storage
@@ -55,6 +56,32 @@ class DateRecordRepository {
         return recordDocument.id
     }
 
+    suspend fun getPhotoAlbumSummary(roomId: String): RecordPhotoAlbumSummary {
+        val records =
+            Firebase
+                .firestore
+                .collection(ROOMS_COLLECTION)
+                .document(roomId)
+                .collection(RECORDS_COLLECTION)
+                .orderBy(CREATED_AT_FIELD, Direction.DESCENDING)
+                .get()
+                .documents
+                .mapNotNull { document ->
+                    runCatching {
+                        document.data(DateRecordDocument.serializer())
+                    }.getOrNull()
+                }
+        val images =
+            records.flatMap { record ->
+                record.images.sortedBy { image -> image.order }
+            }
+
+        return RecordPhotoAlbumSummary(
+            totalImageCount = images.size,
+            previewImageUrls = images.take(PREVIEW_IMAGE_COUNT).map { image -> image.url },
+        )
+    }
+
     private suspend fun uploadRecordImage(
         roomId: String,
         recordId: String,
@@ -99,5 +126,7 @@ class DateRecordRepository {
     private companion object {
         private const val ROOMS_COLLECTION = "rooms"
         private const val RECORDS_COLLECTION = "records"
+        private const val CREATED_AT_FIELD = "createdAt"
+        private const val PREVIEW_IMAGE_COUNT = 3
     }
 }

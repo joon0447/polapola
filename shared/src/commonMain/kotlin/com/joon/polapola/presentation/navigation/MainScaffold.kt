@@ -24,6 +24,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.joon.polapola.data.auth.AuthSessionRepository
+import com.joon.polapola.data.record.DateRecordRepository
+import com.joon.polapola.data.record.RecordPhotoAlbumSummary
 import com.joon.polapola.data.room.RoomRepository
 import com.joon.polapola.presentation.components.BottomNavigationBar
 import com.joon.polapola.presentation.components.PolaBottomNavigationTab
@@ -39,6 +41,7 @@ import kotlin.time.Clock
 
 @Composable
 fun MainScaffold(
+    photoAlbumRefreshKey: Int = 0,
     onCreateRoomClick: () -> Unit = {},
     onJoinWithInviteCodeClick: () -> Unit = {},
     onRecordClick: () -> Unit = {},
@@ -46,17 +49,24 @@ fun MainScaffold(
     val navController = rememberNavController()
     val authSessionRepository = remember { AuthSessionRepository() }
     val roomRepository = remember { RoomRepository() }
+    val dateRecordRepository = remember { DateRecordRepository() }
     var selectedTab by remember { mutableStateOf(PolaBottomNavigationTab.HOME) }
     var roomName by remember { mutableStateOf<String?>(null) }
     var relationshipDayCount by remember { mutableStateOf<Int?>(null) }
+    var photoAlbumSummary by remember { mutableStateOf(RecordPhotoAlbumSummary(totalImageCount = 0, previewImageUrls = emptyList())) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(photoAlbumRefreshKey) {
         runCatching {
             val user = authSessionRepository.getSignedInUser() ?: return@runCatching null
             roomRepository.getRoomByMemberUid(uid = user.uid)
         }.onSuccess { room ->
             roomName = room?.name
             relationshipDayCount = room?.firstMetDate?.toRelationshipDayCount()
+            photoAlbumSummary =
+                room
+                    ?.id
+                    ?.let { id -> dateRecordRepository.getPhotoAlbumSummary(roomId = id) }
+                    ?: RecordPhotoAlbumSummary(totalImageCount = 0, previewImageUrls = emptyList())
         }
     }
 
@@ -106,6 +116,8 @@ fun MainScaffold(
                     hasRoom = roomName != null,
                     roomName = roomName.orEmpty(),
                     relationshipDayCount = relationshipDayCount,
+                    photoCount = photoAlbumSummary.totalImageCount,
+                    photoPreviewUrls = photoAlbumSummary.previewImageUrls,
                     onJoinWithInviteCodeClick = onJoinWithInviteCodeClick,
                     onCreateRoomClick = onCreateRoomClick,
                 )

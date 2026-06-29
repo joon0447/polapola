@@ -35,6 +35,7 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
     val roomRepository = remember { RoomRepository() }
     val dateRecordRepository = remember { DateRecordRepository() }
     val coroutineScope = rememberCoroutineScope()
+    var photoAlbumRefreshKey by remember { mutableStateOf(0) }
 
     NavHost(
         navController = navController,
@@ -75,6 +76,7 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
         }
         composable<MainRoute> {
             MainScaffold(
+                photoAlbumRefreshKey = photoAlbumRefreshKey,
                 onCreateRoomClick = {
                     navController.navigate(CreateRoomRoute)
                 },
@@ -98,6 +100,7 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
                         runCatching {
                             dateRecordRepository.createDateRecord(input)
                         }.onSuccess {
+                            photoAlbumRefreshKey += 1
                             navController.popBackStack()
                         }
                         isSaving = false

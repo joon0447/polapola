@@ -11,6 +11,8 @@ fun HomeScreen(
     hasRoom: Boolean = true,
     roomName: String = "",
     relationshipDayCount: Int? = null,
+    photoCount: Int = 0,
+    photoPreviewUrls: List<String> = emptyList(),
     onJoinWithInviteCodeClick: () -> Unit = {},
     onCreateRoomClick: () -> Unit = {},
 ) {
@@ -18,6 +20,8 @@ fun HomeScreen(
         RoomHomeContent(
             roomName = roomName,
             relationshipDayCount = relationshipDayCount,
+            photoCount = photoCount,
+            photoPreviewUrls = photoPreviewUrls,
         )
     } else {
         EmptyHomeContent(
@@ -35,6 +39,7 @@ private fun RoomHomeScreenPreview() {
             hasRoom = true,
             roomName = "민서의 공부방",
             relationshipDayCount = 1000,
+            photoCount = 24,
         )
     }
 }

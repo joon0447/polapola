@@ -16,6 +16,8 @@ import com.joon.polapola.presentation.theme.AppTheme
 fun RoomHomeContent(
     roomName: String,
     relationshipDayCount: Int?,
+    photoCount: Int = 0,
+    photoPreviewUrls: List<String> = emptyList(),
 ) {
     Column(
         modifier =
@@ -27,7 +29,10 @@ fun RoomHomeContent(
     ) {
         RoomTitle(roomName = roomName)
         AnniversarySummaryCard(relationshipDayCount = relationshipDayCount)
-        PhotoAlbumMenu()
+        PhotoAlbumMenu(
+            photoCount = photoCount,
+            previewImageUrls = photoPreviewUrls,
+        )
         WeekCalendarTools()
         WeeklyDateRecords()
     }
@@ -40,6 +45,7 @@ private fun RoomHomeContentPreview() {
         RoomHomeContent(
             roomName = "민서의 공부방",
             relationshipDayCount = 1000,
+            photoCount = 24,
         )
     }
 }
