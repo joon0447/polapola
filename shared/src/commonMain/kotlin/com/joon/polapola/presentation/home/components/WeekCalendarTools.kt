@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -30,9 +31,35 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joon.polapola.presentation.theme.AppTheme
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 
 @Composable
-fun WeekCalendarTools() {
+fun WeekCalendarTools(photoDates: List<String> = emptyList()) {
+    val photoDateSet = remember(photoDates) { photoDates.toSet() }
+    val weekDays =
+        remember(photoDateSet) {
+            val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+            val lastWeekMonday = today.startOfWeek().minus(DatePeriod(days = DAYS_IN_WEEK))
+
+            List(DAYS_IN_WEEK) { index ->
+                val date = lastWeekMonday.plus(DatePeriod(days = index))
+
+                WeekDay(
+                    label = date.dayOfWeek.toKoreanShortText(),
+                    date = date.day.toString(),
+                    isoDate = date.toString(),
+                    hasRecord = date.toString() in photoDateSet,
+                )
+            }
+        }
+
     Column(
         modifier =
             Modifier
@@ -46,7 +73,7 @@ fun WeekCalendarTools() {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "이번 주",
+                text = "저번 주",
                 color = Color(0xFF1A1A1A),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.ExtraBold,
@@ -79,15 +106,7 @@ fun WeekCalendarTools() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(7.dp),
         ) {
-            listOf(
-                WeekDay("월", "17", false),
-                WeekDay("화", "18", true),
-                WeekDay("수", "19", false),
-                WeekDay("목", "20", false),
-                WeekDay("금", "21", true),
-                WeekDay("토", "22", false),
-                WeekDay("일", "23", false),
-            ).forEach { day ->
+            weekDays.forEach { day ->
                 WeekDayCell(
                     day = day,
                     modifier = Modifier.weight(1f),
@@ -145,6 +164,30 @@ private fun CalendarIcon() {
     }
 }
 
+private fun LocalDate.startOfWeek(): LocalDate = minus(DatePeriod(days = dayOfWeek.toIsoDayNumber() - 1))
+
+private fun DayOfWeek.toIsoDayNumber(): Int =
+    when (this) {
+        DayOfWeek.MONDAY -> 1
+        DayOfWeek.TUESDAY -> 2
+        DayOfWeek.WEDNESDAY -> 3
+        DayOfWeek.THURSDAY -> 4
+        DayOfWeek.FRIDAY -> 5
+        DayOfWeek.SATURDAY -> 6
+        DayOfWeek.SUNDAY -> 7
+    }
+
+private fun DayOfWeek.toKoreanShortText(): String =
+    when (this) {
+        DayOfWeek.MONDAY -> "월"
+        DayOfWeek.TUESDAY -> "화"
+        DayOfWeek.WEDNESDAY -> "수"
+        DayOfWeek.THURSDAY -> "목"
+        DayOfWeek.FRIDAY -> "금"
+        DayOfWeek.SATURDAY -> "토"
+        DayOfWeek.SUNDAY -> "일"
+    }
+
 private fun DrawScope.point(
     x: Float,
     y: Float,
@@ -187,13 +230,22 @@ private fun DrawScope.drawRectLine(
 private data class WeekDay(
     val label: String,
     val date: String,
+    val isoDate: String,
     val hasRecord: Boolean,
 )
+
+private const val DAYS_IN_WEEK = 7
 
 @Preview
 @Composable
 private fun WeekCalendarToolsPreview() {
     AppTheme {
-        WeekCalendarTools()
+        WeekCalendarTools(
+            photoDates =
+                listOf(
+                    "2026-06-23",
+                    "2026-06-26",
+                ),
+        )
     }
 }

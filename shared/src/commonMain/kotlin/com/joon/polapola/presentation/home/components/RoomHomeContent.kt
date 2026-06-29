@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.joon.polapola.data.record.DailyPhotoSummary
 import com.joon.polapola.presentation.theme.AppTheme
 
 @Composable
@@ -18,6 +19,7 @@ fun RoomHomeContent(
     relationshipDayCount: Int?,
     photoCount: Int = 0,
     photoPreviewUrls: List<String> = emptyList(),
+    dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList(),
 ) {
     Column(
         modifier =
@@ -33,8 +35,10 @@ fun RoomHomeContent(
             photoCount = photoCount,
             previewImageUrls = photoPreviewUrls,
         )
-        WeekCalendarTools()
-        WeeklyDateRecords()
+        WeekCalendarTools(photoDates = dailyPhotoSummaries.map { summary -> summary.date })
+        WeeklyDateRecords(
+            dailyPhotoSummaries = dailyPhotoSummaries,
+        )
     }
 }
 
@@ -46,6 +50,12 @@ private fun RoomHomeContentPreview() {
             roomName = "민서의 공부방",
             relationshipDayCount = 1000,
             photoCount = 24,
+            dailyPhotoSummaries =
+                listOf(
+                    DailyPhotoSummary(date = "2026-06-14", imageCount = 8, previewImageUrl = ""),
+                    DailyPhotoSummary(date = "2026-06-11", imageCount = 4, previewImageUrl = ""),
+                    DailyPhotoSummary(date = "2026-06-10", imageCount = 2, previewImageUrl = ""),
+                ),
         )
     }
 }

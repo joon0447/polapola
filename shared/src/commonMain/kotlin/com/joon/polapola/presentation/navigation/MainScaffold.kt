@@ -53,7 +53,15 @@ fun MainScaffold(
     var selectedTab by remember { mutableStateOf(PolaBottomNavigationTab.HOME) }
     var roomName by remember { mutableStateOf<String?>(null) }
     var relationshipDayCount by remember { mutableStateOf<Int?>(null) }
-    var photoAlbumSummary by remember { mutableStateOf(RecordPhotoAlbumSummary(totalImageCount = 0, previewImageUrls = emptyList())) }
+    var photoAlbumSummary by remember {
+        mutableStateOf(
+            RecordPhotoAlbumSummary(
+                totalImageCount = 0,
+                previewImageUrls = emptyList(),
+                dailyPhotoSummaries = emptyList(),
+            ),
+        )
+    }
 
     LaunchedEffect(photoAlbumRefreshKey) {
         runCatching {
@@ -66,7 +74,11 @@ fun MainScaffold(
                 room
                     ?.id
                     ?.let { id -> dateRecordRepository.getPhotoAlbumSummary(roomId = id) }
-                    ?: RecordPhotoAlbumSummary(totalImageCount = 0, previewImageUrls = emptyList())
+                    ?: RecordPhotoAlbumSummary(
+                        totalImageCount = 0,
+                        previewImageUrls = emptyList(),
+                        dailyPhotoSummaries = emptyList(),
+                    )
         }
     }
 
@@ -118,6 +130,7 @@ fun MainScaffold(
                     relationshipDayCount = relationshipDayCount,
                     photoCount = photoAlbumSummary.totalImageCount,
                     photoPreviewUrls = photoAlbumSummary.previewImageUrls,
+                    dailyPhotoSummaries = photoAlbumSummary.dailyPhotoSummaries,
                     onJoinWithInviteCodeClick = onJoinWithInviteCodeClick,
                     onCreateRoomClick = onCreateRoomClick,
                 )

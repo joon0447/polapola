@@ -75,10 +75,26 @@ class DateRecordRepository {
             records.flatMap { record ->
                 record.images.sortedBy { image -> image.order }
             }
+        val dailyPhotoSummaries =
+            records
+                .groupBy { record -> record.date }
+                .mapNotNull { (date, dateRecords) ->
+                    val dateImages =
+                        dateRecords
+                            .flatMap { record -> record.images.sortedBy { image -> image.order } }
+                    val previewImage = dateImages.firstOrNull() ?: return@mapNotNull null
+
+                    DailyPhotoSummary(
+                        date = date,
+                        imageCount = dateImages.size,
+                        previewImageUrl = previewImage.url,
+                    )
+                }.sortedByDescending { summary -> summary.date }
 
         return RecordPhotoAlbumSummary(
             totalImageCount = images.size,
             previewImageUrls = images.take(PREVIEW_IMAGE_COUNT).map { image -> image.url },
+            dailyPhotoSummaries = dailyPhotoSummaries,
         )
     }
 

@@ -2,6 +2,7 @@ package com.joon.polapola.presentation.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.joon.polapola.data.record.DailyPhotoSummary
 import com.joon.polapola.presentation.home.components.EmptyHomeContent
 import com.joon.polapola.presentation.home.components.RoomHomeContent
 import com.joon.polapola.presentation.theme.AppTheme
@@ -13,6 +14,7 @@ fun HomeScreen(
     relationshipDayCount: Int? = null,
     photoCount: Int = 0,
     photoPreviewUrls: List<String> = emptyList(),
+    dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList(),
     onJoinWithInviteCodeClick: () -> Unit = {},
     onCreateRoomClick: () -> Unit = {},
 ) {
@@ -22,6 +24,7 @@ fun HomeScreen(
             relationshipDayCount = relationshipDayCount,
             photoCount = photoCount,
             photoPreviewUrls = photoPreviewUrls,
+            dailyPhotoSummaries = dailyPhotoSummaries,
         )
     } else {
         EmptyHomeContent(
@@ -40,6 +43,11 @@ private fun RoomHomeScreenPreview() {
             roomName = "민서의 공부방",
             relationshipDayCount = 1000,
             photoCount = 24,
+            dailyPhotoSummaries =
+                listOf(
+                    DailyPhotoSummary(date = "2026-06-14", imageCount = 8, previewImageUrl = ""),
+                    DailyPhotoSummary(date = "2026-06-11", imageCount = 4, previewImageUrl = ""),
+                ),
         )
     }
 }
