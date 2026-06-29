@@ -12,6 +12,7 @@
 		2B11A3000000000000000006 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2B11A3000000000000000007 /* FirebaseAuth */; };
 		2B11A3000000000000000008 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 2B11A300000000000000000A /* GoogleSignIn */; };
 		2B11A300000000000000000B /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 2B11A300000000000000000C /* FirebaseFirestore */; };
+		2B11A300000000000000000D /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 2B11A300000000000000000E /* FirebaseStorage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,7 +21,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F4C637AF52B9ED2DFA7BCF78 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		F4C637AF52B9ED2DFA7BCF78 /* Exceptions for "iosApp" folder in "iosApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -33,7 +34,7 @@
 		7063F5AF69C7A8D9CD6422FB /* iosApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				F4C637AF52B9ED2DFA7BCF78 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+				F4C637AF52B9ED2DFA7BCF78 /* Exceptions for "iosApp" folder in "iosApp" target */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -54,6 +55,7 @@
 				2B11A3000000000000000006 /* FirebaseAuth in Frameworks */,
 				2B11A3000000000000000008 /* GoogleSignIn in Frameworks */,
 				2B11A300000000000000000B /* FirebaseFirestore in Frameworks */,
+				2B11A300000000000000000D /* FirebaseStorage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,6 +105,7 @@
 				2B11A3000000000000000007 /* FirebaseAuth */,
 				2B11A300000000000000000A /* GoogleSignIn */,
 				2B11A300000000000000000C /* FirebaseFirestore */,
+				2B11A300000000000000000E /* FirebaseStorage */,
 			);
 			productName = iosApp;
 			productReference = AE2A331CA1CD7736563FECD7 /* Polapola.app */;
@@ -431,6 +434,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2B11A3000000000000000004 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		2B11A300000000000000000E /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2B11A3000000000000000004 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
