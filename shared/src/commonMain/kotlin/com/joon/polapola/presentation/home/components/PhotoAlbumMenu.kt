@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -34,10 +35,12 @@ import androidx.compose.ui.unit.sp
 import com.joon.polapola.presentation.theme.AppTheme
 
 @Composable
-fun PhotoAlbumMenu() {
+fun PhotoAlbumMenu(
+    modifier: Modifier = Modifier,
+) {
     Surface(
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
                 .height(76.dp),
         shape = RoundedCornerShape(20.dp),
@@ -46,6 +49,7 @@ fun PhotoAlbumMenu() {
         shadowElevation = 1.dp,
     ) {
         Row(
+            modifier = Modifier.padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
