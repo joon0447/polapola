@@ -3,6 +3,7 @@ package com.joon.polapola.presentation.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -33,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.joon.polapola.presentation.theme.AppTheme
 
 @Composable
-fun PolaBottomNavigationBar(
+fun BottomNavigationBar(
     selectedTab: PolaBottomNavigationTab,
     onTabClick: (PolaBottomNavigationTab) -> Unit,
     modifier: Modifier = Modifier,
@@ -105,16 +107,19 @@ private fun BottomNavTab(
         }
     val labelFontSize =
         when {
-            prominent -> 12.sp
-            label.length > 2 -> 10.sp
-            else -> 11.sp
+            prominent -> 16.sp
+            else -> 14.sp
         }
 
     Surface(
         modifier =
             modifier
                 .height(if (prominent) 58.dp else 54.dp)
-                .clickable(onClick = onClick),
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onClick,
+                ),
         shape = CircleShape,
         color = if (prominent) Color(0xFFFF4FB6) else Color.Transparent,
         border = if (prominent) BorderStroke(width = 3.dp, color = Color.White) else null,
@@ -230,9 +235,9 @@ private fun DrawScope.drawRectLine(
 
 @Preview
 @Composable
-private fun PolaBottomNavigationBarPreview() {
+private fun BottomNavigationBarPreview() {
     AppTheme {
-        PolaBottomNavigationBar(
+        BottomNavigationBar(
             selectedTab = PolaBottomNavigationTab.HOME,
             onTabClick = {},
         )

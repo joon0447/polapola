@@ -35,9 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.joon.polapola.presentation.theme.AppTheme
 
 @Composable
-fun PhotoAlbumMenu(
-    modifier: Modifier = Modifier,
-) {
+fun PhotoAlbumMenu(modifier: Modifier = Modifier) {
     Surface(
         modifier =
             modifier

@@ -25,7 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.joon.polapola.data.auth.AuthSessionRepository
 import com.joon.polapola.data.room.RoomRepository
-import com.joon.polapola.presentation.components.PolaBottomNavigationBar
+import com.joon.polapola.presentation.components.BottomNavigationBar
 import com.joon.polapola.presentation.components.PolaBottomNavigationTab
 import com.joon.polapola.presentation.home.HomeScreen
 import com.joon.polapola.presentation.navigation.route.HomeRoute
@@ -70,7 +70,7 @@ fun MainScaffold(
                         .padding(bottom = 15.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                PolaBottomNavigationBar(
+                BottomNavigationBar(
                     selectedTab = selectedTab,
                     onTabClick = { tab ->
                         selectedTab = tab
