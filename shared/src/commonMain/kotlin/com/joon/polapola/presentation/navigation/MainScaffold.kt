@@ -30,7 +30,6 @@ import com.joon.polapola.presentation.components.PolaBottomNavigationTab
 import com.joon.polapola.presentation.home.HomeScreen
 import com.joon.polapola.presentation.navigation.route.HomeRoute
 import com.joon.polapola.presentation.navigation.route.MyPageRoute
-import com.joon.polapola.presentation.navigation.route.RecordRoute
 import com.joon.polapola.presentation.theme.AppTheme
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -42,6 +41,7 @@ import kotlin.time.Clock
 fun MainScaffold(
     onCreateRoomClick: () -> Unit = {},
     onJoinWithInviteCodeClick: () -> Unit = {},
+    onRecordClick: () -> Unit = {},
 ) {
     val navController = rememberNavController()
     val authSessionRepository = remember { AuthSessionRepository() }
@@ -73,13 +73,19 @@ fun MainScaffold(
                 BottomNavigationBar(
                     selectedTab = selectedTab,
                     onTabClick = { tab ->
-                        selectedTab = tab
-                        navController.navigate(tab.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                        if (tab == PolaBottomNavigationTab.RECORD) {
+                            onRecordClick()
+                        } else {
+                            val route = tab.mainRoute ?: return@BottomNavigationBar
+
+                            selectedTab = tab
+                            navController.navigate(route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                            launchSingleTop = true
-                            restoreState = true
                         }
                     },
                 )
@@ -104,9 +110,6 @@ fun MainScaffold(
                     onCreateRoomClick = onCreateRoomClick,
                 )
             }
-            composable<RecordRoute> {
-                MainPlaceholderContent(text = "기록")
-            }
             composable<MyPageRoute> {
                 MainPlaceholderContent(text = "마이페이지")
             }
@@ -114,11 +117,11 @@ fun MainScaffold(
     }
 }
 
-private val PolaBottomNavigationTab.route: Any
+private val PolaBottomNavigationTab.mainRoute: Any?
     get() =
         when (this) {
             PolaBottomNavigationTab.HOME -> HomeRoute
-            PolaBottomNavigationTab.RECORD -> RecordRoute
+            PolaBottomNavigationTab.RECORD -> null
             PolaBottomNavigationTab.MY_PAGE -> MyPageRoute
         }
 
