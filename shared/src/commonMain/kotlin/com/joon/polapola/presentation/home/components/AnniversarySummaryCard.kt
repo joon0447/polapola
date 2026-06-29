@@ -31,10 +31,13 @@ import polapola.shared.generated.resources.Res
 import polapola.shared.generated.resources.home_room_image
 
 @Composable
-fun AnniversarySummaryCard() {
+fun AnniversarySummaryCard(
+    relationshipDayCount: Int?,
+    modifier: Modifier = Modifier,
+) {
     Surface(
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
                 .height(155.dp),
         shape = RoundedCornerShape(15.dp),
@@ -42,8 +45,14 @@ fun AnniversarySummaryCard() {
         border = BorderStroke(width = 1.dp, color = Color(0xFFBDBDBD)),
     ) {
         Row(
-            modifier = Modifier.padding(vertical = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(15.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        vertical = 10.dp,
+                        horizontal = 15.dp,
+                    ),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
@@ -52,9 +61,7 @@ fun AnniversarySummaryCard() {
             ) {
                 Column(
                     modifier =
-                        Modifier
-                            .width(169.dp)
-                            .height(55.dp),
+                        Modifier.width(169.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     Text(
@@ -66,7 +73,7 @@ fun AnniversarySummaryCard() {
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Text(
-                        text = "D+ 1000",
+                        text = relationshipDayCount?.let { "D+ $it" } ?: "D+ -",
                         color = Color.Black,
                         fontSize = 32.sp,
                         lineHeight = 20.sp,
@@ -101,6 +108,6 @@ fun AnniversarySummaryCard() {
 @Composable
 private fun AnniversarySummaryCardPreview() {
     AppTheme {
-        AnniversarySummaryCard()
+        AnniversarySummaryCard(relationshipDayCount = 1000)
     }
 }

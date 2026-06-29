@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,10 +23,17 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.joon.polapola.data.auth.AuthSessionRepository
+import com.joon.polapola.data.room.RoomRepository
 import com.joon.polapola.presentation.components.PolaBottomNavigationBar
 import com.joon.polapola.presentation.components.PolaBottomNavigationTab
 import com.joon.polapola.presentation.home.HomeScreen
 import com.joon.polapola.presentation.theme.AppTheme
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.daysUntil
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 
 @Composable
 fun MainScaffold(
@@ -33,7 +41,21 @@ fun MainScaffold(
     onJoinWithInviteCodeClick: () -> Unit = {},
 ) {
     val navController = rememberNavController()
+    val authSessionRepository = remember { AuthSessionRepository() }
+    val roomRepository = remember { RoomRepository() }
     var selectedTab by remember { mutableStateOf(PolaBottomNavigationTab.HOME) }
+    var roomName by remember { mutableStateOf<String?>(null) }
+    var relationshipDayCount by remember { mutableStateOf<Int?>(null) }
+
+    LaunchedEffect(Unit) {
+        runCatching {
+            val user = authSessionRepository.getSignedInUser() ?: return@runCatching null
+            roomRepository.getRoomByMemberUid(uid = user.uid)
+        }.onSuccess { room ->
+            roomName = room?.name
+            relationshipDayCount = room?.firstMetDate?.toRelationshipDayCount()
+        }
+    }
 
     Scaffold(
         containerColor = Color.White,
@@ -72,6 +94,9 @@ fun MainScaffold(
         ) {
             composable<HomeRoute> {
                 HomeScreen(
+                    hasRoom = roomName != null,
+                    roomName = roomName.orEmpty(),
+                    relationshipDayCount = relationshipDayCount,
                     onJoinWithInviteCodeClick = onJoinWithInviteCodeClick,
                     onCreateRoomClick = onCreateRoomClick,
                 )
@@ -109,6 +134,16 @@ private fun MainPlaceholderContent(text: String) {
             style = MaterialTheme.typography.titleLarge,
         )
     }
+}
+
+private fun String.toRelationshipDayCount(): Int? {
+    val firstMetDate =
+        runCatching {
+            LocalDate.parse(this)
+        }.getOrNull() ?: return null
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+
+    return (firstMetDate.daysUntil(today) + 1).coerceAtLeast(1)
 }
 
 @Preview

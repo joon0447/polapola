@@ -9,11 +9,16 @@ import com.joon.polapola.presentation.theme.AppTheme
 @Composable
 fun HomeScreen(
     hasRoom: Boolean = true,
+    roomName: String = "",
+    relationshipDayCount: Int? = null,
     onJoinWithInviteCodeClick: () -> Unit = {},
     onCreateRoomClick: () -> Unit = {},
 ) {
     if (hasRoom) {
-        RoomHomeContent()
+        RoomHomeContent(
+            roomName = roomName,
+            relationshipDayCount = relationshipDayCount,
+        )
     } else {
         EmptyHomeContent(
             onJoinWithInviteCodeClick = onJoinWithInviteCodeClick,
@@ -26,7 +31,11 @@ fun HomeScreen(
 @Composable
 private fun RoomHomeScreenPreview() {
     AppTheme {
-        HomeScreen(hasRoom = true)
+        HomeScreen(
+            hasRoom = true,
+            roomName = "민서의 공부방",
+            relationshipDayCount = 1000,
+        )
     }
 }
 

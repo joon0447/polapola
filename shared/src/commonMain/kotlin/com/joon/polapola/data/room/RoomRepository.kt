@@ -43,9 +43,26 @@ class RoomRepository {
         )
     }
 
+    @Suppress("DEPRECATION")
+    suspend fun getRoomByMemberUid(uid: String): RoomDocument? {
+        val roomSnapshot =
+            Firebase
+                .firestore
+                .collection(ROOMS_COLLECTION)
+                .where(field = MEMBER_UIDS_FIELD, arrayContains = uid)
+                .limit(1)
+                .get()
+
+        return roomSnapshot
+            .documents
+            .firstOrNull()
+            ?.data(RoomDocument.serializer())
+    }
+
     private companion object {
         private const val ROOMS_COLLECTION = "rooms"
         private const val INVITE_CODE_FIELD = "inviteCode"
+        private const val MEMBER_UIDS_FIELD = "memberUids"
         private const val INVITE_CODE_LENGTH = 6
         private const val INVITE_CODE_MAX_ATTEMPTS = 10
         private const val INVITE_CODE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"

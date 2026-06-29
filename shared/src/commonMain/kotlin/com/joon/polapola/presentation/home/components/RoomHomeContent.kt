@@ -13,7 +13,10 @@ import androidx.compose.ui.unit.dp
 import com.joon.polapola.presentation.theme.AppTheme
 
 @Composable
-fun RoomHomeContent() {
+fun RoomHomeContent(
+    roomName: String,
+    relationshipDayCount: Int?,
+) {
     Column(
         modifier =
             Modifier
@@ -22,8 +25,8 @@ fun RoomHomeContent() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        RoomTitle(roomName = "민서의 공부방")
-        AnniversarySummaryCard()
+        RoomTitle(roomName = roomName)
+        AnniversarySummaryCard(relationshipDayCount = relationshipDayCount)
         PhotoAlbumMenu()
         WeekCalendarTools()
         WeeklyDateRecords()
@@ -34,6 +37,9 @@ fun RoomHomeContent() {
 @Composable
 private fun RoomHomeContentPreview() {
     AppTheme {
-        RoomHomeContent()
+        RoomHomeContent(
+            roomName = "민서의 공부방",
+            relationshipDayCount = 1000,
+        )
     }
 }
