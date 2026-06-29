@@ -58,7 +58,7 @@ fun WeeklyDateRecords(
             .todayIn(TimeZone.currentSystemDefault())
             .startOfWeek(),
     dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList(),
-    onRecordClick: (String) -> Unit = {},
+    onDateClick: (String) -> Unit = {},
 ) {
     val selectedWeekPhotoSummaries =
         remember(dailyPhotoSummaries, selectedWeekStart) {
@@ -99,9 +99,7 @@ fun WeeklyDateRecords(
                     DailyPhotoCard(
                         summary = summary,
                         onClick = {
-                            if (summary.recordId.isNotBlank()) {
-                                onRecordClick(summary.recordId)
-                            }
+                            onDateClick(summary.date)
                         },
                     )
                 }

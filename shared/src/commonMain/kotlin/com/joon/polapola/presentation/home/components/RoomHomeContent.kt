@@ -32,7 +32,7 @@ fun RoomHomeContent(
     photoPreviewUrls: List<String> = emptyList(),
     dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList(),
     onPhotoAlbumClick: () -> Unit = {},
-    onRecordClick: (String) -> Unit = {},
+    onPhotoDateClick: (String) -> Unit = {},
 ) {
     val today =
         remember {
@@ -65,7 +65,7 @@ fun RoomHomeContent(
         WeeklyDateRecords(
             selectedWeekStart = selectedWeekStart,
             dailyPhotoSummaries = dailyPhotoSummaries,
-            onRecordClick = onRecordClick,
+            onDateClick = onPhotoDateClick,
         )
     }
 }

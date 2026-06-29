@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.joon.polapola.data.record.PhotoAlbumDetailPhoto
 import com.joon.polapola.data.record.PhotoAlbumDetailRecord
 import com.joon.polapola.presentation.imagepicker.loadRemoteImageBytes
 import com.joon.polapola.presentation.imagepicker.toImageBitmapOrNull
@@ -119,11 +120,13 @@ private fun PhotoAlbumDetailContent(
     record: PhotoAlbumDetailRecord,
     modifier: Modifier = Modifier,
 ) {
-    val imageUrls = record.imageUrls
-    val pagerState = rememberPagerState(pageCount = { imageUrls.size.coerceAtLeast(1) })
+    val photos = record.photos
+    val pagerState = rememberPagerState(pageCount = { photos.size.coerceAtLeast(1) })
+    val currentPhoto = photos.getOrNull(pagerState.currentPage)
+    val currentMemo = currentPhoto?.memo?.ifBlank { DEFAULT_MEMO_TEXT } ?: DEFAULT_MEMO_TEXT
     val currentPhotoNumber = (pagerState.currentPage + 1).toString().padStart(2, '0')
     val totalPhotoCount =
-        imageUrls
+        photos
             .size
             .coerceAtLeast(1)
             .toString()
@@ -144,7 +147,7 @@ private fun PhotoAlbumDetailContent(
                 shadowElevation = 10.dp,
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    if (imageUrls.isEmpty()) {
+                    if (photos.isEmpty()) {
                         PhotoFallback()
                     } else {
                         HorizontalPager(
@@ -152,7 +155,7 @@ private fun PhotoAlbumDetailContent(
                             modifier = Modifier.fillMaxSize(),
                         ) { page ->
                             RemotePhoto(
-                                imageUrl = imageUrls[page],
+                                imageUrl = photos[page].url,
                                 modifier = Modifier.fillMaxSize(),
                             )
                         }
@@ -210,7 +213,7 @@ private fun PhotoAlbumDetailContent(
                         verticalArrangement = Arrangement.spacedBy(5.dp),
                     ) {
                         Text(
-                            text = record.placeName ?: "우리의 한 줄 메모",
+                            text = currentPhoto?.placeName ?: "우리의 한 줄 메모",
                             color = Color(0xFF9CA3AF),
                             fontSize = 12.sp,
                             maxLines = 1,
@@ -218,7 +221,7 @@ private fun PhotoAlbumDetailContent(
                             style = MaterialTheme.typography.labelSmall,
                         )
                         Text(
-                            text = record.memo.ifBlank { "함께한 순간을 기록했어요" },
+                            text = currentMemo,
                             color = Color(0xFF1A1A1A),
                             fontSize = 15.sp,
                             lineHeight = 18.sp,
@@ -375,6 +378,8 @@ private val PhotoDetailGradient =
             ),
     )
 
+private const val DEFAULT_MEMO_TEXT = "함께한 순간을 기록했어요"
+
 @Preview
 @Composable
 private fun PhotoAlbumDetailScreenPreview() {
@@ -384,9 +389,19 @@ private fun PhotoAlbumDetailScreenPreview() {
                 PhotoAlbumDetailRecord(
                     id = "1",
                     date = "2026-05-18",
-                    memo = "둘이 같이 고른 딸기 케이크가 정말 맛있었던 날",
-                    placeName = null,
-                    imageUrls = listOf("", "", ""),
+                    photos =
+                        listOf(
+                            PhotoAlbumDetailPhoto(
+                                url = "",
+                                memo = "둘이 같이 고른 딸기 케이크가 정말 맛있었던 날",
+                                placeName = null,
+                            ),
+                            PhotoAlbumDetailPhoto(
+                                url = "",
+                                memo = "저녁 산책까지 완벽했던 하루",
+                                placeName = "한강공원",
+                            ),
+                        ),
                 ),
         )
     }

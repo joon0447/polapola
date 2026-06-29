@@ -128,14 +128,48 @@ class DateRecordRepository {
                 PhotoAlbumDetailRecord(
                     id = record.id,
                     date = record.date,
-                    memo = record.memo,
-                    placeName = record.place?.name,
-                    imageUrls =
+                    photos =
                         record.images
                             .sortedBy { image -> image.order }
-                            .map { image -> image.url },
+                            .map { image ->
+                                PhotoAlbumDetailPhoto(
+                                    url = image.url,
+                                    memo = record.memo,
+                                    placeName = record.place?.name,
+                                )
+                            },
                 )
             }
+
+    suspend fun getPhotoAlbumDetailRecordByDate(
+        roomId: String,
+        date: String,
+    ): PhotoAlbumDetailRecord? {
+        val records =
+            getDateRecords(roomId = roomId)
+                .filter { record -> record.date == date }
+                .filter { record -> record.images.isNotEmpty() }
+        val photos =
+            records.flatMap { record ->
+                record.images
+                    .sortedBy { image -> image.order }
+                    .map { image ->
+                        PhotoAlbumDetailPhoto(
+                            url = image.url,
+                            memo = record.memo,
+                            placeName = record.place?.name,
+                        )
+                    }
+            }
+
+        if (photos.isEmpty()) return null
+
+        return PhotoAlbumDetailRecord(
+            id = date,
+            date = date,
+            photos = photos,
+        )
+    }
 
     private suspend fun getDateRecords(roomId: String): List<DateRecordDocument> =
         Firebase

@@ -18,7 +18,7 @@ fun HomeScreen(
     onJoinWithInviteCodeClick: () -> Unit = {},
     onCreateRoomClick: () -> Unit = {},
     onPhotoAlbumClick: () -> Unit = {},
-    onRecordClick: (String) -> Unit = {},
+    onPhotoDateClick: (String) -> Unit = {},
 ) {
     if (hasRoom) {
         RoomHomeContent(
@@ -28,7 +28,7 @@ fun HomeScreen(
             photoPreviewUrls = photoPreviewUrls,
             dailyPhotoSummaries = dailyPhotoSummaries,
             onPhotoAlbumClick = onPhotoAlbumClick,
-            onRecordClick = onRecordClick,
+            onPhotoDateClick = onPhotoDateClick,
         )
     } else {
         EmptyHomeContent(

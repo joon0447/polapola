@@ -16,9 +16,13 @@ data class PhotoAlbumRecord(
 data class PhotoAlbumDetailRecord(
     val id: String,
     val date: String,
+    val photos: List<PhotoAlbumDetailPhoto>,
+)
+
+data class PhotoAlbumDetailPhoto(
+    val url: String,
     val memo: String,
     val placeName: String?,
-    val imageUrls: List<String>,
 )
 
 data class DailyPhotoSummary(

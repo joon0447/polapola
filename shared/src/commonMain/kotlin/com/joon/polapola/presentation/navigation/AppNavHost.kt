@@ -24,6 +24,7 @@ import com.joon.polapola.presentation.navigation.route.CreateRoomRoute
 import com.joon.polapola.presentation.navigation.route.InviteRoute
 import com.joon.polapola.presentation.navigation.route.LoginRoute
 import com.joon.polapola.presentation.navigation.route.MainRoute
+import com.joon.polapola.presentation.navigation.route.PhotoAlbumDateDetailRoute
 import com.joon.polapola.presentation.navigation.route.PhotoAlbumDetailRoute
 import com.joon.polapola.presentation.navigation.route.PhotoAlbumRoute
 import com.joon.polapola.presentation.navigation.route.RecordRoute
@@ -93,8 +94,8 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
                 onPhotoAlbumClick = {
                     navController.navigate(PhotoAlbumRoute)
                 },
-                onPhotoAlbumRecordClick = { recordId ->
-                    navController.navigate(PhotoAlbumDetailRoute(recordId = recordId))
+                onPhotoDateClick = { date ->
+                    navController.navigate(PhotoAlbumDateDetailRoute(date = date))
                 },
             )
         }
@@ -140,6 +141,35 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
                     dateRecordRepository.getPhotoAlbumDetailRecord(
                         roomId = room.id,
                         recordId = route.recordId,
+                    )
+                }.onSuccess { photoAlbumRecord ->
+                    record = photoAlbumRecord
+                }
+                isLoading = false
+            }
+
+            PhotoAlbumDetailScreen(
+                record = record,
+                isLoading = isLoading,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+            )
+        }
+        composable<PhotoAlbumDateDetailRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<PhotoAlbumDateDetailRoute>()
+            var record by remember { mutableStateOf<PhotoAlbumDetailRecord?>(null) }
+            var isLoading by remember { mutableStateOf(true) }
+
+            LaunchedEffect(route.date) {
+                isLoading = true
+                runCatching {
+                    val user = authSessionRepository.getSignedInUser() ?: return@runCatching null
+                    val room = roomRepository.getRoomByMemberUid(uid = user.uid) ?: return@runCatching null
+
+                    dateRecordRepository.getPhotoAlbumDetailRecordByDate(
+                        roomId = room.id,
+                        date = route.date,
                     )
                 }.onSuccess { photoAlbumRecord ->
                     record = photoAlbumRecord
