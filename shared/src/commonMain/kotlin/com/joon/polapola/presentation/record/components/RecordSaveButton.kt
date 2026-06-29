@@ -23,6 +23,7 @@ fun RecordSaveButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    text: String = "기록 저장하기",
 ) {
     Surface(
         modifier =
@@ -36,7 +37,7 @@ fun RecordSaveButton(
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(
-                text = "기록 저장하기",
+                text = text,
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.ExtraBold,

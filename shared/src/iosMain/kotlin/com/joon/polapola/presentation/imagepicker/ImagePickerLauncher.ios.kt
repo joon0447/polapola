@@ -170,6 +170,7 @@ private fun NSData.toPickedImage(
         bytes = bytesPointer.readBytes(length.toInt()),
         fileName = fileName,
         mimeType = mimeType,
+        storageKey = IosPickedImageDataStore.put(this),
     )
 }
 

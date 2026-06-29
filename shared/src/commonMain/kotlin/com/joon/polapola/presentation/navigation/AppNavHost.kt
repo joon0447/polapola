@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.joon.polapola.data.auth.AuthSessionRepository
+import com.joon.polapola.data.record.DateRecordRepository
 import com.joon.polapola.data.room.RoomRepository
 import com.joon.polapola.presentation.createroom.CreateRoomScreen
 import com.joon.polapola.presentation.invite.InviteScreen
@@ -32,6 +33,7 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
     val navController = rememberNavController()
     val authSessionRepository = remember { AuthSessionRepository() }
     val roomRepository = remember { RoomRepository() }
+    val dateRecordRepository = remember { DateRecordRepository() }
     val coroutineScope = rememberCoroutineScope()
 
     NavHost(
@@ -82,10 +84,26 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
             )
         }
         composable<RecordRoute> {
+            var isSaving by remember { mutableStateOf(false) }
+
             RecordScreen(
                 onBackClick = {
                     navController.popBackStack()
                 },
+                onSaveClick = { input ->
+                    if (isSaving) return@RecordScreen
+
+                    coroutineScope.launch {
+                        isSaving = true
+                        runCatching {
+                            dateRecordRepository.createDateRecord(input)
+                        }.onSuccess {
+                            navController.popBackStack()
+                        }
+                        isSaving = false
+                    }
+                },
+                isSaving = isSaving,
             )
         }
         composable<CreateRoomRoute> {

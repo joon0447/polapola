@@ -49,6 +49,7 @@ import kotlin.time.Instant
 fun RecordScreen(
     onBackClick: () -> Unit = {},
     onSaveClick: (DateRecordInput) -> Unit = {},
+    isSaving: Boolean = false,
 ) {
     val today =
         remember {
@@ -74,7 +75,7 @@ fun RecordScreen(
         rememberDatePickerState(
             initialSelectedDateMillis = Clock.System.now().toEpochMilliseconds(),
         )
-    val isSaveEnabled = selectedPlace != null || memo.isNotBlank() || selectedImages.isNotEmpty()
+    val isSaveEnabled = !isSaving && (selectedPlace != null || memo.isNotBlank() || selectedImages.isNotEmpty())
 
     if (showPlaceSearch) {
         PlaceSearchScreen(
@@ -125,6 +126,7 @@ fun RecordScreen(
         Spacer(modifier = Modifier.weight(1f))
         RecordSaveButton(
             enabled = isSaveEnabled,
+            text = if (isSaving) "저장 중..." else "기록 저장하기",
             onClick = {
                 onSaveClick(
                     DateRecordInput(
