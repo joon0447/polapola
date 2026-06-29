@@ -57,6 +57,7 @@ fun PhotoAlbumScreen(
     records: List<PhotoAlbumRecord> = emptyList(),
     isLoading: Boolean = false,
     onBackClick: () -> Unit = {},
+    onRecordClick: (String) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -92,7 +93,10 @@ fun PhotoAlbumScreen(
                     items = records,
                     key = { record -> record.id },
                 ) { record ->
-                    PhotoAlbumRecordCard(record = record)
+                    PhotoAlbumRecordCard(
+                        record = record,
+                        onClick = { onRecordClick(record.id) },
+                    )
                 }
             }
         }
@@ -167,7 +171,10 @@ private fun PhotoAlbumHeader() {
 }
 
 @Composable
-private fun PhotoAlbumRecordCard(record: PhotoAlbumRecord) {
+private fun PhotoAlbumRecordCard(
+    record: PhotoAlbumRecord,
+    onClick: () -> Unit,
+) {
     val image = rememberRemoteImageBitmap(imageUrl = record.previewImageUrl)
 
     Surface(
@@ -179,6 +186,7 @@ private fun PhotoAlbumRecordCard(record: PhotoAlbumRecord) {
         color = Color(0xFFFFE6F4),
         border = BorderStroke(width = 1.dp, color = Color(0xFFFFD1E7)),
         shadowElevation = 4.dp,
+        onClick = onClick,
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (image != null) {

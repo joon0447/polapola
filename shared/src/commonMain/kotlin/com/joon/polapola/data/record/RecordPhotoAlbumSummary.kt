@@ -13,6 +13,14 @@ data class PhotoAlbumRecord(
     val previewImageUrl: String,
 )
 
+data class PhotoAlbumDetailRecord(
+    val id: String,
+    val date: String,
+    val memo: String,
+    val placeName: String?,
+    val imageUrls: List<String>,
+)
+
 data class DailyPhotoSummary(
     val date: String,
     val imageCount: Int,

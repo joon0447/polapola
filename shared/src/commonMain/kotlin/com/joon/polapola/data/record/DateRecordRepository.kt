@@ -103,6 +103,33 @@ class DateRecordRepository {
                 )
             }.sortedByDescending { record -> record.date }
 
+    suspend fun getPhotoAlbumDetailRecord(
+        roomId: String,
+        recordId: String,
+    ): PhotoAlbumDetailRecord? =
+        runCatching {
+            Firebase
+                .firestore
+                .collection(ROOMS_COLLECTION)
+                .document(roomId)
+                .collection(RECORDS_COLLECTION)
+                .document(recordId)
+                .get()
+                .data(DateRecordDocument.serializer())
+        }.getOrNull()
+            ?.let { record ->
+                PhotoAlbumDetailRecord(
+                    id = record.id,
+                    date = record.date,
+                    memo = record.memo,
+                    placeName = record.place?.name,
+                    imageUrls =
+                        record.images
+                            .sortedBy { image -> image.order }
+                            .map { image -> image.url },
+                )
+            }
+
     private suspend fun getDateRecords(roomId: String): List<DateRecordDocument> =
         Firebase
             .firestore
