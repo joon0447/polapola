@@ -46,6 +46,7 @@ fun MainScaffold(
     onJoinWithInviteCodeClick: () -> Unit = {},
     onRecordClick: () -> Unit = {},
     onPhotoAlbumClick: () -> Unit = {},
+    onPhotoAlbumRecordClick: (String) -> Unit = {},
 ) {
     val navController = rememberNavController()
     val authSessionRepository = remember { AuthSessionRepository() }
@@ -135,6 +136,7 @@ fun MainScaffold(
                     onJoinWithInviteCodeClick = onJoinWithInviteCodeClick,
                     onCreateRoomClick = onCreateRoomClick,
                     onPhotoAlbumClick = onPhotoAlbumClick,
+                    onRecordClick = onPhotoAlbumRecordClick,
                 )
             }
             composable<MyPageRoute> {

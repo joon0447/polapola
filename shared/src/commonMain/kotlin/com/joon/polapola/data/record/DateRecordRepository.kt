@@ -67,12 +67,19 @@ class DateRecordRepository {
             records
                 .groupBy { record -> record.date }
                 .mapNotNull { (date, dateRecords) ->
+                    val recordsWithImages = dateRecords.filter { record -> record.images.isNotEmpty() }
+                    val previewRecord = recordsWithImages.firstOrNull() ?: return@mapNotNull null
                     val dateImages =
-                        dateRecords
+                        recordsWithImages
                             .flatMap { record -> record.images.sortedBy { image -> image.order } }
-                    val previewImage = dateImages.firstOrNull() ?: return@mapNotNull null
+                    val previewImage =
+                        previewRecord
+                            .images
+                            .minByOrNull { image -> image.order }
+                            ?: return@mapNotNull null
 
                     DailyPhotoSummary(
+                        recordId = previewRecord.id,
                         date = date,
                         imageCount = dateImages.size,
                         previewImageUrl = previewImage.url,

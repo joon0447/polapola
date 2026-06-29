@@ -58,6 +58,7 @@ fun WeeklyDateRecords(
             .todayIn(TimeZone.currentSystemDefault())
             .startOfWeek(),
     dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList(),
+    onRecordClick: (String) -> Unit = {},
 ) {
     val selectedWeekPhotoSummaries =
         remember(dailyPhotoSummaries, selectedWeekStart) {
@@ -95,7 +96,14 @@ fun WeeklyDateRecords(
                     items = selectedWeekPhotoSummaries,
                     key = { summary -> summary.date },
                 ) { summary ->
-                    DailyPhotoCard(summary = summary)
+                    DailyPhotoCard(
+                        summary = summary,
+                        onClick = {
+                            if (summary.recordId.isNotBlank()) {
+                                onRecordClick(summary.recordId)
+                            }
+                        },
+                    )
                 }
             }
         }
@@ -103,7 +111,10 @@ fun WeeklyDateRecords(
 }
 
 @Composable
-private fun DailyPhotoCard(summary: DailyPhotoSummary) {
+private fun DailyPhotoCard(
+    summary: DailyPhotoSummary,
+    onClick: () -> Unit,
+) {
     val image = rememberRemoteImageBitmap(imageUrl = summary.previewImageUrl)
     val displayDate = summary.date.toDisplayDate()
 
@@ -116,6 +127,7 @@ private fun DailyPhotoCard(summary: DailyPhotoSummary) {
         color = Color(0xFFFFF7FA),
         border = BorderStroke(width = 1.dp, color = Color(0xFFF2D7E2)),
         shadowElevation = 1.dp,
+        onClick = onClick,
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (image != null) {

@@ -91,8 +91,6 @@ private fun PhotoAlbumDetailHeader(onBackClick: () -> Unit) {
     ) {
         Surface(
             modifier = Modifier.size(42.dp),
-            shape = CircleShape,
-            color = Color.White,
             onClick = onBackClick,
         ) {
             Box(contentAlignment = Alignment.Center) {
@@ -108,11 +106,9 @@ private fun PhotoAlbumDetailHeader(onBackClick: () -> Unit) {
         )
         Surface(
             modifier = Modifier.size(42.dp),
-            shape = CircleShape,
-            color = Color.White,
         ) {
             Box(contentAlignment = Alignment.Center) {
-                MoreIcon()
+//                MoreIcon()
             }
         }
     }

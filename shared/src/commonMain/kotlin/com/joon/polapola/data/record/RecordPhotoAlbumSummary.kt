@@ -22,6 +22,7 @@ data class PhotoAlbumDetailRecord(
 )
 
 data class DailyPhotoSummary(
+    val recordId: String = "",
     val date: String,
     val imageCount: Int,
     val previewImageUrl: String,

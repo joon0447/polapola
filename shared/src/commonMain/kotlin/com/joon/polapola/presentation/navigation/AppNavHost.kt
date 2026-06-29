@@ -93,6 +93,9 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
                 onPhotoAlbumClick = {
                     navController.navigate(PhotoAlbumRoute)
                 },
+                onPhotoAlbumRecordClick = { recordId ->
+                    navController.navigate(PhotoAlbumDetailRoute(recordId = recordId))
+                },
             )
         }
         composable<PhotoAlbumRoute> {
