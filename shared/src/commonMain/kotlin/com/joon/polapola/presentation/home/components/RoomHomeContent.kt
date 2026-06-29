@@ -31,6 +31,7 @@ fun RoomHomeContent(
     photoCount: Int = 0,
     photoPreviewUrls: List<String> = emptyList(),
     dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList(),
+    onPhotoAlbumClick: () -> Unit = {},
 ) {
     val today =
         remember {
@@ -51,6 +52,7 @@ fun RoomHomeContent(
         PhotoAlbumMenu(
             photoCount = photoCount,
             previewImageUrls = photoPreviewUrls,
+            onClick = onPhotoAlbumClick,
         )
         WeekCalendarTools(
             photoDates = dailyPhotoSummaries.map { summary -> summary.date },

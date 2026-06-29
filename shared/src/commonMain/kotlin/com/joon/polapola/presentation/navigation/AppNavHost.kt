@@ -1,6 +1,7 @@
 package com.joon.polapola.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -13,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.joon.polapola.data.auth.AuthSessionRepository
 import com.joon.polapola.data.record.DateRecordRepository
+import com.joon.polapola.data.record.PhotoAlbumRecord
 import com.joon.polapola.data.room.RoomRepository
 import com.joon.polapola.presentation.createroom.CreateRoomScreen
 import com.joon.polapola.presentation.invite.InviteScreen
@@ -21,8 +23,10 @@ import com.joon.polapola.presentation.navigation.route.CreateRoomRoute
 import com.joon.polapola.presentation.navigation.route.InviteRoute
 import com.joon.polapola.presentation.navigation.route.LoginRoute
 import com.joon.polapola.presentation.navigation.route.MainRoute
+import com.joon.polapola.presentation.navigation.route.PhotoAlbumRoute
 import com.joon.polapola.presentation.navigation.route.RecordRoute
 import com.joon.polapola.presentation.navigation.route.SplashRoute
+import com.joon.polapola.presentation.photoalbum.PhotoAlbumScreen
 import com.joon.polapola.presentation.record.RecordScreen
 import com.joon.polapola.presentation.splash.SplashScreen
 import com.joon.polapola.presentation.theme.AppTheme
@@ -82,6 +86,34 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
                 },
                 onRecordClick = {
                     navController.navigate(RecordRoute)
+                },
+                onPhotoAlbumClick = {
+                    navController.navigate(PhotoAlbumRoute)
+                },
+            )
+        }
+        composable<PhotoAlbumRoute> {
+            var records by remember { mutableStateOf(emptyList<PhotoAlbumRecord>()) }
+            var isLoading by remember { mutableStateOf(true) }
+
+            LaunchedEffect(Unit) {
+                isLoading = true
+                runCatching {
+                    val user = authSessionRepository.getSignedInUser() ?: return@runCatching emptyList()
+                    val room = roomRepository.getRoomByMemberUid(uid = user.uid) ?: return@runCatching emptyList()
+
+                    dateRecordRepository.getPhotoAlbumRecords(roomId = room.id)
+                }.onSuccess { photoAlbumRecords ->
+                    records = photoAlbumRecords
+                }
+                isLoading = false
+            }
+
+            PhotoAlbumScreen(
+                records = records,
+                isLoading = isLoading,
+                onBackClick = {
+                    navController.popBackStack()
                 },
             )
         }

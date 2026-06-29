@@ -58,19 +58,7 @@ class DateRecordRepository {
 
     suspend fun getPhotoAlbumSummary(roomId: String): RecordPhotoAlbumSummary {
         val records =
-            Firebase
-                .firestore
-                .collection(ROOMS_COLLECTION)
-                .document(roomId)
-                .collection(RECORDS_COLLECTION)
-                .orderBy(CREATED_AT_FIELD, Direction.DESCENDING)
-                .get()
-                .documents
-                .mapNotNull { document ->
-                    runCatching {
-                        document.data(DateRecordDocument.serializer())
-                    }.getOrNull()
-                }
+            getDateRecords(roomId = roomId)
         val images =
             records.flatMap { record ->
                 record.images.sortedBy { image -> image.order }
@@ -97,6 +85,38 @@ class DateRecordRepository {
             dailyPhotoSummaries = dailyPhotoSummaries,
         )
     }
+
+    suspend fun getPhotoAlbumRecords(roomId: String): List<PhotoAlbumRecord> =
+        getDateRecords(roomId = roomId)
+            .mapNotNull { record ->
+                val previewImageUrl =
+                    record.images
+                        .minByOrNull { image -> image.order }
+                        ?.url
+                        ?: return@mapNotNull null
+
+                PhotoAlbumRecord(
+                    id = record.id,
+                    date = record.date,
+                    memo = record.memo,
+                    previewImageUrl = previewImageUrl,
+                )
+            }.sortedByDescending { record -> record.date }
+
+    private suspend fun getDateRecords(roomId: String): List<DateRecordDocument> =
+        Firebase
+            .firestore
+            .collection(ROOMS_COLLECTION)
+            .document(roomId)
+            .collection(RECORDS_COLLECTION)
+            .orderBy(CREATED_AT_FIELD, Direction.DESCENDING)
+            .get()
+            .documents
+            .mapNotNull { document ->
+                runCatching {
+                    document.data(DateRecordDocument.serializer())
+                }.getOrNull()
+            }
 
     private suspend fun uploadRecordImage(
         roomId: String,

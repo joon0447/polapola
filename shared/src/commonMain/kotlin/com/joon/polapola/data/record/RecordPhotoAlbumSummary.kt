@@ -6,6 +6,13 @@ data class RecordPhotoAlbumSummary(
     val dailyPhotoSummaries: List<DailyPhotoSummary>,
 )
 
+data class PhotoAlbumRecord(
+    val id: String,
+    val date: String,
+    val memo: String,
+    val previewImageUrl: String,
+)
+
 data class DailyPhotoSummary(
     val date: String,
     val imageCount: Int,

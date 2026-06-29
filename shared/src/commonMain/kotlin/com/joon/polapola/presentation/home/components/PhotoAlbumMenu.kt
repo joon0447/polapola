@@ -52,6 +52,7 @@ fun PhotoAlbumMenu(
     modifier: Modifier = Modifier,
     photoCount: Int = 0,
     previewImageUrls: List<String> = emptyList(),
+    onClick: () -> Unit = {},
 ) {
     val hasPhotos = photoCount > 0
     val previewImages = rememberRemoteImageBitmaps(previewImageUrls = previewImageUrls.take(MAX_PREVIEW_IMAGE_COUNT))
@@ -65,6 +66,7 @@ fun PhotoAlbumMenu(
         color = Color(0xFFFFF7FB),
         border = BorderStroke(width = 1.dp, color = Color(0xFFFFD1E7)),
         shadowElevation = 1.dp,
+        onClick = onClick,
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp),

@@ -17,6 +17,7 @@ fun HomeScreen(
     dailyPhotoSummaries: List<DailyPhotoSummary> = emptyList(),
     onJoinWithInviteCodeClick: () -> Unit = {},
     onCreateRoomClick: () -> Unit = {},
+    onPhotoAlbumClick: () -> Unit = {},
 ) {
     if (hasRoom) {
         RoomHomeContent(
@@ -25,6 +26,7 @@ fun HomeScreen(
             photoCount = photoCount,
             photoPreviewUrls = photoPreviewUrls,
             dailyPhotoSummaries = dailyPhotoSummaries,
+            onPhotoAlbumClick = onPhotoAlbumClick,
         )
     } else {
         EmptyHomeContent(
