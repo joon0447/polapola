@@ -5,7 +5,7 @@ import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
 
-actual suspend fun loadRemoteImageBytes(url: String): ByteArray? =
+internal actual suspend fun downloadRemoteImageBytes(url: String): ByteArray? =
     withContext(Dispatchers.IO) {
         val connection = URL(url).openConnection() as HttpURLConnection
 

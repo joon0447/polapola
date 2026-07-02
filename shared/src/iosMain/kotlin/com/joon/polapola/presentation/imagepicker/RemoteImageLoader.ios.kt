@@ -9,7 +9,7 @@ import platform.Foundation.NSURLSession
 import platform.Foundation.dataTaskWithURL
 import kotlin.coroutines.resume
 
-actual suspend fun loadRemoteImageBytes(url: String): ByteArray? {
+internal actual suspend fun downloadRemoteImageBytes(url: String): ByteArray? {
     val nsUrl = NSURL.URLWithString(url) ?: return null
 
     return suspendCancellableCoroutine { continuation ->

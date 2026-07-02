@@ -1,0 +1,30 @@
+CREATE TABLE CachedImage (
+    imageUrl TEXT NOT NULL PRIMARY KEY,
+    localFilePath TEXT NOT NULL,
+    updatedAt INTEGER NOT NULL,
+    sizeBytes INTEGER NOT NULL,
+    cachedAt INTEGER NOT NULL
+);
+
+selectByUrl:
+SELECT *
+FROM CachedImage
+WHERE imageUrl = ?;
+
+upsert:
+INSERT OR REPLACE INTO CachedImage(
+    imageUrl,
+    localFilePath,
+    updatedAt,
+    sizeBytes,
+    cachedAt
+)
+VALUES (?, ?, ?, ?, ?);
+
+deleteByUrl:
+DELETE FROM CachedImage
+WHERE imageUrl = ?;
+
+deleteExpired:
+DELETE FROM CachedImage
+WHERE cachedAt < ?;
