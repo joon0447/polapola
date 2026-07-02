@@ -1,13 +1,10 @@
 package com.joon.polapola.presentation.navigation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,6 +27,7 @@ import com.joon.polapola.data.room.RoomRepository
 import com.joon.polapola.presentation.components.BottomNavigationBar
 import com.joon.polapola.presentation.components.PolaBottomNavigationTab
 import com.joon.polapola.presentation.home.HomeScreen
+import com.joon.polapola.presentation.mypage.MyPageScreen
 import com.joon.polapola.presentation.navigation.route.HomeRoute
 import com.joon.polapola.presentation.navigation.route.MyPageRoute
 import com.joon.polapola.presentation.theme.AppTheme
@@ -47,12 +45,14 @@ fun MainScaffold(
     onRecordClick: () -> Unit = {},
     onPhotoAlbumClick: () -> Unit = {},
     onPhotoDateClick: (String) -> Unit = {},
+    onLogoutClick: () -> Unit = {},
 ) {
     val navController = rememberNavController()
     val authSessionRepository = remember { AuthSessionRepository() }
     val roomRepository = remember { RoomRepository() }
     val dateRecordRepository = remember { DateRecordRepository() }
     var selectedTab by remember { mutableStateOf(PolaBottomNavigationTab.HOME) }
+    var signedInEmail by remember { mutableStateOf("") }
     var roomName by remember { mutableStateOf<String?>(null) }
     var relationshipDayCount by remember { mutableStateOf<Int?>(null) }
     var photoAlbumSummary by remember {
@@ -68,6 +68,7 @@ fun MainScaffold(
     LaunchedEffect(photoAlbumRefreshKey) {
         runCatching {
             val user = authSessionRepository.getSignedInUser() ?: return@runCatching null
+            signedInEmail = user.email.orEmpty()
             roomRepository.getRoomByMemberUid(uid = user.uid)
         }.onSuccess { room ->
             roomName = room?.name
@@ -140,7 +141,10 @@ fun MainScaffold(
                 )
             }
             composable<MyPageRoute> {
-                MainPlaceholderContent(text = "마이페이지")
+                MyPageScreen(
+                    email = signedInEmail,
+                    onLogoutClick = onLogoutClick,
+                )
             }
         }
     }
@@ -153,23 +157,6 @@ private val PolaBottomNavigationTab.mainRoute: Any?
             PolaBottomNavigationTab.RECORD -> null
             PolaBottomNavigationTab.MY_PAGE -> MyPageRoute
         }
-
-@Composable
-private fun MainPlaceholderContent(text: String) {
-    Box(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .background(Color.White),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = text,
-            color = Color.Black,
-            style = MaterialTheme.typography.titleLarge,
-        )
-    }
-}
 
 private fun String.toRelationshipDayCount(): Int? {
     val firstMetDate =

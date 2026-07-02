@@ -83,6 +83,8 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
             )
         }
         composable<MainRoute> {
+            var isLoggingOut by remember { mutableStateOf(false) }
+
             MainScaffold(
                 photoAlbumRefreshKey = photoAlbumRefreshKey,
                 onCreateRoomClick = {
@@ -96,6 +98,23 @@ fun AppNavHost(onGoogleLoginClick: (() -> Unit) -> Unit = { onLoginSucceeded -> 
                 },
                 onPhotoDateClick = { date ->
                     navController.navigate(PhotoAlbumDateDetailRoute(date = date))
+                },
+                onLogoutClick = {
+                    if (isLoggingOut) return@MainScaffold
+
+                    coroutineScope.launch {
+                        isLoggingOut = true
+                        runCatching {
+                            authSessionRepository.signOut()
+                        }.onSuccess {
+                            navController.navigate(LoginRoute) {
+                                popUpTo<MainRoute> {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                        isLoggingOut = false
+                    }
                 },
             )
         }

@@ -13,4 +13,8 @@ class AuthSessionRepository {
 
         return user.toAuthenticatedUser()
     }
+
+    suspend fun signOut() {
+        Firebase.auth.signOut()
+    }
 }
